@@ -60,7 +60,7 @@ fun LoginScreen() {
                 painter = painterResource(id = R.drawable.pattern_image),
                 contentDescription = "Pattern Image",
                 modifier = Modifier
-                    .size(138.dp)
+                    .size(200.dp)
                     .padding(top = 52.dp),
                 contentScale = ContentScale.Fit
             )*/
