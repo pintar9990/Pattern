@@ -85,7 +85,12 @@ fun RegistrationScreen(navController: NavHostController) {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                placeholder = { Text("Correo electrónico", style = MaterialTheme.typography.bodyLarge) },
+                placeholder = {
+                    Text(
+                        "Correo electrónico",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -144,16 +149,19 @@ fun RegistrationScreen(navController: NavHostController) {
             ) {
                 Text(
                     "Registrarse",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontSize = 20.sp)
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.White,
+                        fontSize = 20.sp
+                    )
                 )
             }
 
             Spacer(modifier = Modifier.height(41.dp))
 
-            Divider(
-                color = Color(0xFF555555),
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
                 thickness = 1.dp,
-                modifier = Modifier.fillMaxWidth()
+                color = Color(0xFF555555)
             )
 
             Spacer(modifier = Modifier.height(29.dp))
@@ -169,7 +177,10 @@ fun RegistrationScreen(navController: NavHostController) {
             ) {
                 Text(
                     "Iniciar Sesión",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontSize = 20.sp)
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black,
+                        fontSize = 20.sp
+                    )
                 )
             }
 

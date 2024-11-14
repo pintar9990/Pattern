@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
@@ -52,27 +53,60 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier.padding(top = 38.dp)
             )
 
+            Image(
+                painter = painterResource(id = R.drawable.patterns),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(top = 52.dp),
+                contentScale = ContentScale.Fit
+            )
+
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Correo electrónico", style = MaterialTheme.typography.bodyLarge) },
+                placeholder = { Text("Correo electrónico", style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 75.dp)
                     .background(Color(0xFFECF4F5), CircleShape),
-                shape = CircleShape
+                leadingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.email_icon),
+                        contentDescription = "Email Icon",
+                        modifier = Modifier
+                            .size(27.dp)
+                            .padding(top = 4.dp) // Ajusta este valor según sea necesario
+                    )
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent
+                )
             )
 
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña", style = MaterialTheme.typography.bodyLarge) },
+                placeholder = { Text("Contraseña", style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 33.dp)
                     .background(Color(0xFFECF4F5), CircleShape),
+                leadingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.password_icon),
+                        contentDescription = "Password Icon",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .padding(top = 4.dp) // Ajusta este valor según sea necesario
+                    )
+                },
                 visualTransformation = PasswordVisualTransformation(),
-                shape = CircleShape
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent
+                )
             )
 
             Button(
@@ -81,22 +115,22 @@ fun LoginScreen(navController: NavHostController) {
                     .padding(top = 68.dp)
                     .width(169.dp)
                     .height(56.dp)
-                    .shadow(4.dp),
+                    .shadow(4.dp, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(Color.White)
             ) {
                 Text(
                     text = "Iniciar Sesión",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontSize = 20.sp)
                 )
             }
 
-            Divider(
-                color = Color(0xFF555555),
-                thickness = 1.dp,
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 41.dp)
+                    .padding(top = 41.dp),
+                thickness = 1.dp,
+                color = Color(0xFF555555)
             )
 
             Button(
@@ -105,13 +139,13 @@ fun LoginScreen(navController: NavHostController) {
                     .padding(top = 29.dp)
                     .width(169.dp)
                     .height(56.dp)
-                    .shadow(4.dp),
+                    .shadow(4.dp, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFF3C78FE))
             ) {
                 Text(
                     text = "Registrarse",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontSize = 20.sp)
                 )
             }
 
