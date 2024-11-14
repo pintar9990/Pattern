@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -46,7 +47,7 @@ fun LoginScreen() {
                 fontSize = 64.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF676767),
-                fontFamily = FontFamily.Default, // Usa la fuente por defecto
+                fontFamily = FontFamily(Font(R.font.lalezar_regular)), // Usa la fuente Lalezar
                 modifier = Modifier.padding(top = 38.dp)
             )
 
