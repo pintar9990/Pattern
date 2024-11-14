@@ -20,10 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -51,7 +52,6 @@ fun LoginScreen() {
                 modifier = Modifier.padding(top = 38.dp)
             )
 
-
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -76,7 +76,7 @@ fun LoginScreen() {
             )
 
             Button(
-                onClick = { /* Handle login */ },
+                onClick = { navController.navigate("registration") }, // Navegar a RegistrationScreen
                 modifier = Modifier
                     .padding(top = 68.dp)
                     .width(169.dp)
@@ -100,7 +100,7 @@ fun LoginScreen() {
             )
 
             Button(
-                onClick = { /* Handle registration */ },
+                onClick = { navController.navigate("registration") }, // Navegar a RegistrationScreen
                 modifier = Modifier
                     .padding(top = 29.dp)
                     .width(169.dp)

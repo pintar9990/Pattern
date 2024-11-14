@@ -1,18 +1,11 @@
 package com.example.myapplicationdssdsdsd.ui.theme
 
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,16 +14,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(navController: NavHostController) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -65,7 +60,7 @@ fun RegistrationScreen() {
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                placeholder = { Text("Usuario") },
+                placeholder = { Text("Usuario", style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -80,7 +75,6 @@ fun RegistrationScreen() {
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent
                 )
@@ -91,7 +85,7 @@ fun RegistrationScreen() {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                placeholder = { Text("Correo electrónico") },
+                placeholder = { Text("Correo electrónico", style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -116,7 +110,7 @@ fun RegistrationScreen() {
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                placeholder = { Text("Contraseña") },
+                placeholder = { Text("Contraseña", style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -132,7 +126,6 @@ fun RegistrationScreen() {
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent
                 )
@@ -151,10 +144,7 @@ fun RegistrationScreen() {
             ) {
                 Text(
                     "Registrarse",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.Normal
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontSize = 20.sp)
                 )
             }
 
@@ -169,7 +159,7 @@ fun RegistrationScreen() {
             Spacer(modifier = Modifier.height(29.dp))
 
             Button(
-                onClick = { /* Handle login */ },
+                onClick = { navController.navigate("login") }, // Navegar a LoginScreen
                 modifier = Modifier
                     .width(169.dp)
                     .height(56.dp)
@@ -179,10 +169,7 @@ fun RegistrationScreen() {
             ) {
                 Text(
                     "Iniciar Sesión",
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.Normal
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontSize = 20.sp)
                 )
             }
 
@@ -190,11 +177,11 @@ fun RegistrationScreen() {
 
             Text(
                 "Navega como invitado",
-                color = Color(0x99000000),
-                fontSize = 24.sp,
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color(0x99000000),
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center
+                )
             )
         }
     }
