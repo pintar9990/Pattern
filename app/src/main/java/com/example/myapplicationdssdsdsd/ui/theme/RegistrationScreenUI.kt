@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
+import com.google.firebase.auth.FirebaseAuth
+import java.util.regex.Pattern
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,11 @@ fun RegistrationScreen(navController: NavHostController) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val auth = FirebaseAuth.getInstance()
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$")
+    val passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[!@#\$%^&*])[A-Za-z0-9!@#\$%^&*]{6,}$")
 
     Box(
         modifier = Modifier
@@ -139,7 +146,36 @@ fun RegistrationScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(56.dp))
 
             Button(
-                onClick = { /* Handle registration */ },
+                onClick = {
+                    when {
+                        username.isEmpty() || email.isEmpty() || password.isEmpty() -> {
+                            errorMessage = "Por favor, rellena todos los campos."
+                        }
+                        !emailPattern.matcher(email).matches() -> {
+                            errorMessage = "El formato del correo electrónico no es válido."
+                        }
+                        !passwordPattern.matcher(password).matches() -> {
+                            errorMessage = "La contraseña debe tener al menos 6 caracteres, un símbolo y un número."
+                        }
+                        else -> {
+                            auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        // Registro exitoso, navega a la pantalla de inicio de sesión
+                                        navController.navigate("login?registrationSuccess=true") {
+                                            popUpTo("registration") { inclusive = true }
+                                        }
+                                    } else {
+                                        // Manejar errores
+                                        errorMessage = when (task.exception?.message) {
+                                            "The email address is already in use by another account." -> "El correo electrónico ya está en uso por otra cuenta."
+                                            else -> "Error al registrar. Por favor, intenta de nuevo."
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                },
                 modifier = Modifier
                     .width(169.dp)
                     .height(56.dp)
@@ -156,7 +192,14 @@ fun RegistrationScreen(navController: NavHostController) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(41.dp))
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
