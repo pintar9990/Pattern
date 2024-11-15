@@ -18,10 +18,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
 import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
 import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this) // Inicializar Firebase
         enableEdgeToEdge()
         setContent {
             MyApplicationdssdsdsdTheme {

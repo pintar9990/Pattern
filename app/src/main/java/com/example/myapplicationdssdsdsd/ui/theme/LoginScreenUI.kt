@@ -22,12 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean = false) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val auth = FirebaseAuth.getInstance()
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -61,6 +64,15 @@ fun LoginScreen(navController: NavHostController) {
                     .padding(top = 52.dp),
                 contentScale = ContentScale.Fit
             )
+
+            if (registrationSuccess) {
+                Text(
+                    text = "Registro exitoso. Ahora puedes iniciar sesión.",
+                    color = Color.Green,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             OutlinedTextField(
                 value = email,
@@ -110,7 +122,27 @@ fun LoginScreen(navController: NavHostController) {
             )
 
             Button(
-                onClick = { navController.navigate("registration") }, // Navegar a RegistrationScreen
+                onClick = {
+                    if (email.isEmpty() || password.isEmpty()) {
+                        errorMessage = "Por favor, rellena todos los campos."
+                    } else {
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Inicio de sesión exitoso, navega a la pantalla principal
+                                    navController.navigate("main")
+                                } else {
+                                    // Manejar errores
+                                    errorMessage = when (task.exception?.message) {
+                                        "The email address is badly formatted." -> "La dirección de correo electrónico no tiene un formato válido."
+                                        "There is no user record corresponding to this identifier. The user may have been deleted." -> "No existe una cuenta con este correo electrónico."
+                                        "The password is invalid or the user does not have a password." -> "La contraseña es incorrecta."
+                                        else -> "Error al iniciar sesión. Por favor, verifica tus credenciales."
+                                    }
+                                }
+                            }
+                    }
+                },
                 modifier = Modifier
                     .padding(top = 68.dp)
                     .width(169.dp)
@@ -122,6 +154,15 @@ fun LoginScreen(navController: NavHostController) {
                 Text(
                     text = "Iniciar Sesión",
                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontSize = 20.sp)
+                )
+            }
+
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
