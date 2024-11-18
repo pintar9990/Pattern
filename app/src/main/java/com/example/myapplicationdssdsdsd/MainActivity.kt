@@ -1,6 +1,6 @@
 package com.example.myapplicationdssdsdsd
 
-import SavedScreenUI
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +22,7 @@ import com.example.myapplicationdssdsdsd.ui.theme.GenerateQRUI
 import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
 import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
 import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
+import com.example.myapplicationdssdsdsd.ui.theme.SavedScreenUI
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
@@ -69,7 +70,6 @@ fun AppNavHost(navController: NavHostController) {
         }
     }
 }
-
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {

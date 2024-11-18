@@ -1,3 +1,8 @@
+package com.example.myapplicationdssdsdsd.ui.theme
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -17,13 +23,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.ui.theme.ToolBox
-import com.google.firebase.database.DatabaseError
 
 // Data class to represent QR data from Firebase
 data class QrItemData(
@@ -80,12 +82,12 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                     Spacer(modifier = Modifier.height(14.dp))
                 }
 
-
             }
         }
     }
     ToolBox()
 }
+
 
 // Composable para mostrar cada QR
 @Composable
@@ -94,11 +96,14 @@ fun QrItem(item: QrItemData) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Image(
-            painter = rememberImagePainter(item.imageUrl),
-            contentDescription = null,
-            modifier = Modifier.size(72.dp)
-        )
+        val bitmap = remember { decodeBase64ToBitmap(item.imageUrl) }
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.size(72.dp)
+            )
+        }
         Spacer(modifier = Modifier.width(15.dp))
         Text(
             text = item.link,  // Mostrar el enlace del QR
@@ -118,14 +123,12 @@ fun getUserQrItems(onComplete: (List<QrItemData>) -> Unit) {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val qrItems = mutableListOf<QrItemData>()
-                    Log.d("FirebaseData", "Snapshot: ${snapshot.value}")
                     for (qrSnapshot in snapshot.children) {
                         val qr = qrSnapshot.getValue(QrItemData::class.java)
                         qr?.let {
                             qrItems.add(it)
                         }
                     }
-                    Log.d("FirebaseData", "QR Items: $qrItems")
                     onComplete(qrItems) // Devuelve los QR encontrados
                 }
 
@@ -134,7 +137,17 @@ fun getUserQrItems(onComplete: (List<QrItemData>) -> Unit) {
                     Log.e("FirebaseError", "Error al obtener datos: ${error.message}")
                 }
             })
-    } ?: run {
-        Log.e("FirebaseError", "Usuario no autenticado")
+    }
+}
+
+// Función para decodificar la cadena base64 a un Bitmap
+fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+    return try {
+        val base64Image = base64Str.split(",")[1]
+        val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
+        BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    } catch (e: Exception) {
+        Log.e("DecodeError", "Error al decodificar la imagen: ${e.message}")
+        null
     }
 }
