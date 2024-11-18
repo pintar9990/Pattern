@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 import com.example.myapplicationdssdsdsd.R
+import com.example.myapplicationdssdsdsd.ui.theme.ToolBox
+import com.google.firebase.database.DatabaseError
 
 // Data class to represent QR data from Firebase
 data class QrItemData(
@@ -78,18 +80,11 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                     Spacer(modifier = Modifier.height(14.dp))
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(58.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.qr_icon),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.FillWidth
-                    )
-                }
+
             }
         }
     }
+    ToolBox()
 }
 
 // Composable para mostrar cada QR
