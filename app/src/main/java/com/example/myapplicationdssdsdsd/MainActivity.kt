@@ -1,5 +1,6 @@
 package com.example.myapplicationdssdsdsd
 
+import SavedScreenUI
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -58,6 +59,9 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable("registration") {
             RegistrationScreen(navController = navController)
+        }
+        composable("SavedScreenUI") {
+            SavedScreenUI(navController = navController)
         }
     }
 }
