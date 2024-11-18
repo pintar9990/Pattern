@@ -56,7 +56,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                     Spacer(modifier = Modifier.height(14.dp))
                 }
             }
-            ToolBox(navController, registrationSuccess)
+            ToolBox(registrationSuccess)
         }
     }
 }

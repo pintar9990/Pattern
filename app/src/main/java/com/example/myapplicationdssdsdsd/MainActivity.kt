@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.myapplicationdssdsdsd.ui.theme.GenerateQRUI
 import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
 import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
 import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
@@ -62,6 +63,9 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable("SavedScreenUI") {
             SavedScreenUI(navController = navController)
+        }
+        composable("GenerateQRUI") {
+            GenerateQRUI(navController = navController)
         }
     }
 }
