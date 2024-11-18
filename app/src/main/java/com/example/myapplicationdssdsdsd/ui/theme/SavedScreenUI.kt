@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
+import com.example.myapplicationdssdsdsd.ui.theme.ToolBox
 
 @Composable
 fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean = false) {
@@ -31,38 +31,39 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
             .fillMaxSize()
             .background(gradient)
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 47.dp, start = 31.dp, end = 31.dp)
+                .padding(top = 47.dp, start = 31.dp, end = 31.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            item {
-                Text(
-                    text = "QR guardados",
-                    fontSize = 48.sp,
-                    fontFamily = FontFamily(Font(R.font.lalezar_regular)),
-                    color = Color(0xCC000000)
-                )
-                Spacer(modifier = Modifier.height(38.dp))
-            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                item {
+                    Text(
+                        text = "QR guardados",
+                        fontSize = 48.sp,
+                        fontFamily = FontFamily(Font(R.font.lalezar_regular)),
+                        color = Color(0xCC000000)
+                    )
+                    Spacer(modifier = Modifier.height(38.dp))
+                }
 
-            items(qrItems) { item ->
-                QrItem(item)
-                Spacer(modifier = Modifier.height(14.dp))
+                items(qrItems) { item ->
+                    QrItem(item)
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(58.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.qr_icon),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.FillWidth
-                )
-            }
+            ToolBox(navController, registrationSuccess)
         }
     }
 }
+
+
+
+
 
 @Composable
 fun QrItem(item: QrItemData) {
@@ -96,6 +97,6 @@ val qrItems = listOf(
     QrItemData(R.drawable.qr_icon, "exampleurl"),
     QrItemData(R.drawable.qr_icon, "exampleurl"),
     QrItemData(R.drawable.qr_icon, "exampleurl"),
-    QrItemData(R.drawable.qr_icon, "exampleurl")
+    QrItemData(R.drawable.qr_icon, "exampleurl"),
 )
 
