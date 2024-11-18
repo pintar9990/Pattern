@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "888623937571",
+    "firebase_url": "https://patterns-3f17e-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "patterns-3f17e",
     "storage_bucket": "patterns-3f17e.firebasestorage.app"
   },
