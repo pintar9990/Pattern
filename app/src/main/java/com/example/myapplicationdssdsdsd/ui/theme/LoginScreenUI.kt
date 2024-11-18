@@ -52,7 +52,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                 fontSize = 64.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF676767),
-                fontFamily = FontFamily(Font(R.font.lalezar_regular)), // Usa la fuente Lalezar
+                fontFamily = FontFamily(Font(R.font.lalezar_regular)),
                 modifier = Modifier.padding(top = 38.dp)
             )
 

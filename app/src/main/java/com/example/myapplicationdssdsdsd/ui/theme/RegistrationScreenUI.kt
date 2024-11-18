@@ -161,12 +161,11 @@ fun RegistrationScreen(navController: NavHostController) {
                             auth.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
-                                        // Registro exitoso, navega a la pantalla de inicio de sesión
+                                        // Registro exitoso, navega a la pantalla de inicio de sesión con un argumento
                                         navController.navigate("login?registrationSuccess=true") {
                                             popUpTo("registration") { inclusive = true }
                                         }
                                     } else {
-                                        // Manejar errores
                                         errorMessage = when (task.exception?.message) {
                                             "The email address is already in use by another account." -> "El correo electrónico ya está en uso por otra cuenta."
                                             else -> "Error al registrar. Por favor, intenta de nuevo."

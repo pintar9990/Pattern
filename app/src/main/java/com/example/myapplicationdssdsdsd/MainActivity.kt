@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
 import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
 import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
@@ -42,14 +44,24 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
-            LoginScreen(navController = navController)
+        composable(
+            route = "login?registrationSuccess={registrationSuccess}",
+            arguments = listOf(
+                navArgument("registrationSuccess") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { backStackEntry ->
+            val registrationSuccess = backStackEntry.arguments?.getBoolean("registrationSuccess") ?: false
+            LoginScreen(navController = navController, registrationSuccess = registrationSuccess)
         }
         composable("registration") {
             RegistrationScreen(navController = navController)
         }
     }
 }
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
