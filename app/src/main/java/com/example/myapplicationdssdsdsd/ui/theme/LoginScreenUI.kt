@@ -130,7 +130,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     // Inicio de sesión exitoso, navega a la pantalla principal
-                                    navController.navigate("SavedScreenUI")
+                                    navController.navigate("GenerateQRUI")
                                 } else {
                                     // Manejar errores
                                     errorMessage = when (task.exception?.message) {
