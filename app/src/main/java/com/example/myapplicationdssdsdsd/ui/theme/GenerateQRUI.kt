@@ -121,6 +121,7 @@ fun GenerateQRUI(navController: NavHostController) {
             )
         }
     }
+    ToolBox(navController)
 }
 
 fun generateQRCode(text: String): Bitmap {

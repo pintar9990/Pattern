@@ -21,6 +21,7 @@ import androidx.navigation.navArgument
 import com.example.myapplicationdssdsdsd.ui.theme.GenerateQRUI
 import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
 import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
+import com.example.myapplicationdssdsdsd.ui.theme.ProfileScreenUI
 import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
 import com.example.myapplicationdssdsdsd.ui.theme.SavedScreenUI
 import com.google.firebase.FirebaseApp
@@ -85,6 +86,10 @@ fun AppNavHost(navController: NavHostController, startQRCodeScan: () -> Unit) {
         }
         composable("QRCodeScanner") {
             QRCodeScannerScreen(startQRCodeScan = startQRCodeScan)
+        }
+        composable("ProfileScreenUI") {
+            val profilescreen = ProfileScreenUI()
+            profilescreen.ProfileScreen(navController)
         }
     }
 }
