@@ -1,17 +1,18 @@
 package com.example.myapplicationdssdsdsd
 
-import QRCodeScanner
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.view.View
+import android.widget.FrameLayout
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,14 +27,12 @@ import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
 import com.example.myapplicationdssdsdsd.ui.theme.SavedScreenUI
 import com.google.firebase.FirebaseApp
 
-class MainActivity : ComponentActivity() {
-    private lateinit var qrCodeScanner: QRCodeScanner
+class MainActivity : FragmentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this) // Inicializar Firebase
-        qrCodeScanner = QRCodeScanner(this)
         setContent {
             MyApplicationdssdsdsdTheme {
                 val navController = rememberNavController()
@@ -41,27 +40,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavHost(navController = navController, startQRCodeScan = { startQRCodeScan() })
+                    AppNavHost(this, navController = navController)
                 }
             }
         }
-    }
-
-    private val qrCodeScanLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val qrResult = qrCodeScanner.handleResult(result.resultCode, result.resultCode, result.data)
-        if (qrResult != null) {
-            // Maneja el resultado del código QR
-        }
-    }
-
-    fun startQRCodeScan() {
-        qrCodeScanner.startScan()
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavHost(navController: NavHostController, startQRCodeScan: () -> Unit) {
+fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostController) {
     NavHost(navController = navController, startDestination = "login") {
         composable(
             route = "login?registrationSuccess={registrationSuccess}",
@@ -84,19 +72,24 @@ fun AppNavHost(navController: NavHostController, startQRCodeScan: () -> Unit) {
         composable("GenerateQRUI") {
             GenerateQRUI(navController = navController)
         }
-        composable("QRCodeScanner") {
-            QRCodeScannerScreen(startQRCodeScan = startQRCodeScan)
+        composable("QrScannerFragment") {
+            QrScanner(fragmentActivity)
         }
         composable("ProfileScreenUI") {
-            val profilescreen = ProfileScreenUI()
-            profilescreen.ProfileScreen(navController)
+            val profileScreen = ProfileScreenUI()
+            profileScreen.ProfileScreen(navController)
         }
     }
 }
 
 @Composable
-fun QRCodeScannerScreen(startQRCodeScan: () -> Unit) {
-    // Aquí puedes agregar la UI para iniciar el escaneo
-    // Por ejemplo, un botón que llame a startQRCodeScan
-    startQRCodeScan()
+fun QrScanner(fragmentActivity: FragmentActivity) {
+    AndroidView(factory = { context ->
+        FrameLayout(context).apply {
+            id = View.generateViewId()
+            fragmentActivity.supportFragmentManager.beginTransaction()
+                .replace(this.id, QrScannerFragment())
+                .commit()
+        }
+    })
 }

@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.myapplicationdssdsdsd.R
 
 @Composable
 fun ToolBox(
@@ -43,7 +42,7 @@ fun ToolBox(
                 contentDescription = "Navigation Icon 1",
                 modifier = Modifier
                     .size(38.dp)
-                    .clickable { navController.navigate("QRCodeScanner") }
+                    .clickable { navController.navigate("QrScannerFragment") }
             )
             Image(
                 painter = painterResource(id = R.drawable.message_icon),

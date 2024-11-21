@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplicationdssdsdsd.R
+import com.example.myapplicationdssdsdsd.ToolBox
 
 class ProfileScreenUI {
 
@@ -155,5 +156,4 @@ class ProfileScreenUI {
         }
         ToolBox(navController = navController)
     }
-
 }
