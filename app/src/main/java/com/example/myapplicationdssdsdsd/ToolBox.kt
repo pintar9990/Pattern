@@ -1,4 +1,5 @@
 package com.example.myapplicationdssdsdsd
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +34,6 @@ fun ToolBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0x33D9D9D9))
-                .graphicsLayer(alpha = 1f)
                 .padding(vertical = 15.dp, horizontal = 7.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -49,7 +50,7 @@ fun ToolBox(
                 contentDescription = "Navigation Icon 2",
                 modifier = Modifier
                     .size(35.dp)
-                    .clickable { navController.navigate("messageScreen") }
+                    .clickable { navController.navigate("ContactsScreen") } // Navega a la pantalla de contactos
             )
             Image(
                 painter = painterResource(id = R.drawable.scan_icon),

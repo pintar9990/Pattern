@@ -14,17 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.myapplicationdssdsdsd.ui.theme.GenerateQRUI
-import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
-import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
-import com.example.myapplicationdssdsdsd.ui.theme.ProfileScreen // Este es el nuevo import directo
-import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
-import com.example.myapplicationdssdsdsd.ui.theme.SavedScreenUI
+import com.example.myapplicationdssdsdsd.ui.theme.*
 import com.google.firebase.FirebaseApp
 
 class MainActivity : FragmentActivity() {
@@ -54,9 +48,9 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
         composable(
             route = "login?registrationSuccess={registrationSuccess}",
             arguments = listOf(
-                navArgument("registrationSuccess") {
-                    type = NavType.BoolType
+                navArgument("registrationSuccess") { // Se corrige aquí para que no dé error
                     defaultValue = false
+                    type = androidx.navigation.NavType.BoolType // Importa correctamente el tipo de argumento
                 }
             )
         ) { backStackEntry ->
@@ -72,11 +66,11 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
         composable("GenerateQRUI") {
             GenerateQRUI(navController = navController)
         }
-        composable("QrScannerFragment") {
-            QrScanner(fragmentActivity)
-        }
         composable("ProfileScreenUI") {
             ProfileScreen(navController = navController) // Llama directamente a la función ProfileScreen
+        }
+        composable("ContactsScreen") {
+            ContactsScreen(navController = navController) // Ruta para la pantalla de contactos
         }
     }
 }
