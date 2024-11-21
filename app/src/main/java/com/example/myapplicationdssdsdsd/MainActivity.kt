@@ -22,7 +22,7 @@ import androidx.navigation.navArgument
 import com.example.myapplicationdssdsdsd.ui.theme.GenerateQRUI
 import com.example.myapplicationdssdsdsd.ui.theme.LoginScreen
 import com.example.myapplicationdssdsdsd.ui.theme.MyApplicationdssdsdsdTheme
-import com.example.myapplicationdssdsdsd.ui.theme.ProfileScreenUI
+import com.example.myapplicationdssdsdsd.ui.theme.ProfileScreen // Este es el nuevo import directo
 import com.example.myapplicationdssdsdsd.ui.theme.RegistrationScreen
 import com.example.myapplicationdssdsdsd.ui.theme.SavedScreenUI
 import com.google.firebase.FirebaseApp
@@ -76,8 +76,7 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
             QrScanner(fragmentActivity)
         }
         composable("ProfileScreenUI") {
-            val profileScreen = ProfileScreenUI()
-            profileScreen.ProfileScreen(navController)
+            ProfileScreen(navController = navController) // Llama directamente a la función ProfileScreen
         }
     }
 }
