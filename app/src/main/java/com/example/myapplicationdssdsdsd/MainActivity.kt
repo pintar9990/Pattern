@@ -97,3 +97,8 @@ fun QrScanner(fragmentActivity: FragmentActivity) {
         }
     })
 }
+
+object GlobalVariables {
+    var qrCode: String? = null
+}
+
