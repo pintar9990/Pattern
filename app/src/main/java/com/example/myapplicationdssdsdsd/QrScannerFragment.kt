@@ -53,6 +53,7 @@ class QrScannerFragment : Fragment() {
 
     private fun showQrCodeInFrame(qrCode: String) {
         // Implementa la lógica para mostrar el código QR en un frame distinto
+        onDestroyView()
     }
 
     override fun onResume() {

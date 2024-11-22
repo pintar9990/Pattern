@@ -57,6 +57,12 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
             val registrationSuccess = backStackEntry.arguments?.getBoolean("registrationSuccess") ?: false
             LoginScreen(navController = navController, registrationSuccess = registrationSuccess)
         }
+        composable("QrScannerFragment") {
+            QrScanner(fragmentActivity)
+        }
+        composable("QrResultFragment") {
+
+        }
         composable("registration") {
             RegistrationScreen(navController = navController)
         }
