@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.myapplicationdssdsdsd.GlobalVariables
 import com.example.myapplicationdssdsdsd.R
 import com.example.myapplicationdssdsdsd.ToolBox
 
@@ -76,6 +77,7 @@ fun GenerateQRUI(navController: NavHostController) {
         Button(
             onClick = {
                 if (linkText.isNotEmpty()) {
+                    GlobalVariables.qrCode = linkText.toString()
                     navController.navigate("QrResultFragment")
                 }
             },
