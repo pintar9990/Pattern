@@ -32,22 +32,28 @@ import com.google.firebase.auth.FirebaseAuth
 fun ContactsScreen(navController: NavController) {
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val database: DatabaseReference = FirebaseDatabase.getInstance().reference
-    val contacts = remember { mutableStateListOf<String>() } // Para contactos confirmados
-    val requests = remember { mutableStateListOf<String>() } // Para solicitudes pendientes
-    var showDialog by remember { mutableStateOf(false) }  // Nuevo estado para mostrar el diálogo
+    val contacts = remember { mutableStateListOf<Pair<String, String>>() } // UID y username de contactos
+    val requests = remember { mutableStateListOf<Pair<String, String>>() } // UID y username de solicitudes
+    var showDialog by remember { mutableStateOf(false) }  // Estado para mostrar el diálogo
 
     // Obtener contactos y solicitudes pendientes desde la base de datos
     LaunchedEffect(Unit) {
         // Obtener contactos
         database.child("users").child(currentUserId).child("contacts").get().addOnSuccessListener {
             it.children.forEach { snapshot ->
-                contacts.add(snapshot.key.toString())
+                val contactUID = snapshot.key.toString()
+                getUsernameFromUID(contactUID, database) { username ->
+                    username?.let { contacts.add(contactUID to it) }
+                }
             }
         }
         // Obtener solicitudes pendientes
         database.child("users").child(currentUserId).child("requests").get().addOnSuccessListener {
             it.children.forEach { snapshot ->
-                requests.add(snapshot.key.toString())
+                val requestUID = snapshot.key.toString()
+                getUsernameFromUID(requestUID, database) { username ->
+                    username?.let { requests.add(requestUID to it) }
+                }
             }
         }
     }
@@ -71,20 +77,23 @@ fun ContactsScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Mostrar solicitudes pendientes
+            // Mostrar solicitudes y contactos
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(requests) { request ->
-                    ContactItem(contactName = request, isRequest = true, onAccept = {
-                        acceptRequest(currentUserId, request, database)
+                items(requests) { (uid, username) ->
+                    ContactItem(contactName = username, isRequest = true, onAccept = {
+                        acceptRequest(currentUserId, uid, database)
+                        requests.remove(uid to username)
+                        contacts.add(uid to username) // Añadir a contactos
                     }, onReject = {
-                        rejectRequest(currentUserId, request, database)
+                        rejectRequest(currentUserId, uid, database)
+                        requests.remove(uid to username)
                     })
                 }
 
-                items(contacts) { contact ->
-                    ContactItem(contactName = contact, isRequest = false, onAccept = {}, onReject = {})
+                items(contacts) { (_, username) ->
+                    ContactItem(contactName = username, isRequest = false, onAccept = {}, onReject = {})
                 }
             }
 
@@ -106,6 +115,20 @@ fun ContactsScreen(navController: NavController) {
     }
 }
 
+fun getUsernameFromUID(uid: String, database: DatabaseReference, onResult: (String?) -> Unit) {
+    database.child("users").child(uid).child("username").get()
+        .addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                onResult(snapshot.value.toString())
+            } else {
+                onResult(null)
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.e("GetUsername", "Error fetching username: $exception")
+            onResult(null)
+        }
+}
 @Composable
 fun AddContactButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
