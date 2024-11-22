@@ -61,7 +61,7 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
             QrScanner(fragmentActivity)
         }
         composable("QrResultFragment") {
-
+            QRCodeScreen(navController)
         }
         composable("registration") {
             RegistrationScreen(navController = navController)
