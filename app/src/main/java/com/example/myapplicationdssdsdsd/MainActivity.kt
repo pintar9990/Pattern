@@ -48,9 +48,9 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
         composable(
             route = "login?registrationSuccess={registrationSuccess}",
             arguments = listOf(
-                navArgument("registrationSuccess") { // Se corrige aquí para que no dé error
+                navArgument("registrationSuccess") {
                     defaultValue = false
-                    type = androidx.navigation.NavType.BoolType // Importa correctamente el tipo de argumento
+                    type = androidx.navigation.NavType.BoolType
                 }
             )
         ) { backStackEntry ->
@@ -67,10 +67,15 @@ fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostControl
             GenerateQRUI(navController = navController)
         }
         composable("ProfileScreenUI") {
-            ProfileScreen(navController = navController) // Llama directamente a la función ProfileScreen
+            ProfileScreen(navController = navController)
         }
         composable("ContactsScreen") {
-            ContactsScreen(navController = navController) // Ruta para la pantalla de contactos
+            ContactsScreen(navController = navController)
+        }
+        composable("ChatScreen/{contactId}/{contactName}") { backStackEntry ->
+            val contactId = backStackEntry.arguments?.getString("contactId") ?: return@composable
+            val contactName = backStackEntry.arguments?.getString("contactName") ?: return@composable
+            ChatScreen(contactId = contactId, contactName = contactName)
         }
     }
 }
