@@ -1,15 +1,10 @@
 package com.example.myapplicationdssdsdsd.ui.theme
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -34,12 +29,8 @@ import com.example.myapplicationdssdsdsd.R
 import com.example.myapplicationdssdsdsd.ToolBox
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-// Data class to represent QR data from Firebase
-data class QrItemData(
-    val imageUrl: String = "",
-    val link: String = ""
-)
+import com.example.myapplicationdssdsdsd.decodeBase64ToBitmap
+import com.example.myapplicationdssdsdsd.QrItemData
 
 @Composable
 fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean = false) {
@@ -252,17 +243,5 @@ fun getUserQrItems(onComplete: (List<QrItemData>) -> Unit) {
                     Log.e("FirebaseError", "Error al obtener datos: ${error.message}")
                 }
             })
-    }
-}
-
-// Función para decodificar la cadena base64 a un Bitmap
-fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
-    return try {
-        val base64Image = base64Str.split(",")[1]
-        val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
-        BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-    } catch (e: Exception) {
-        Log.e("DecodeError", "Error al decodificar la imagen: ${e.message}")
-        null
     }
 }
