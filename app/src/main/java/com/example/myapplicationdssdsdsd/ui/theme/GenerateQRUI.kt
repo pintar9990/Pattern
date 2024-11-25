@@ -77,7 +77,7 @@ fun GenerateQRUI(navController: NavHostController) {
         Button(
             onClick = {
                 if (linkText.isNotEmpty()) {
-                    GlobalVariables.qrCode = linkText.toString()
+                    GlobalVariables.qrCode = linkText
                     navController.navigate("QrResultFragment")
                 }
             },

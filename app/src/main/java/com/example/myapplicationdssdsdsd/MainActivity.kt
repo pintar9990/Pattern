@@ -30,6 +30,7 @@ class MainActivity : FragmentActivity() {
         setContent {
             MyApplicationdssdsdsdTheme {
                 val navController = rememberNavController()
+                GlobalVariables.navController = navController
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -92,13 +93,14 @@ fun QrScanner(fragmentActivity: FragmentActivity) {
         FrameLayout(context).apply {
             id = View.generateViewId()
             fragmentActivity.supportFragmentManager.beginTransaction()
-                .replace(this.id, QrScannerFragment())
+                .replace(this.id, QrScannerFragment(GlobalVariables.navController))
                 .commit()
         }
     })
 }
 
 object GlobalVariables {
-    var qrCode: String? = null
+    var qrCode: String = ""
+    lateinit var navController: NavHostController
 }
 

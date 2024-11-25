@@ -4,18 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.myapplicationdssdsdsd.R
+import androidx.navigation.NavHostController
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
-import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 
-class QrScannerFragment : Fragment() {
+class QrScannerFragment(navController: NavHostController) : Fragment() {
 
     private lateinit var barcodeView: DecoratedBarcodeView
 
@@ -38,9 +36,9 @@ class QrScannerFragment : Fragment() {
         barcodeView.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult?) {
                 result?.let {
-                    Toast.makeText(context, "Código QR escaneado: ${it.text}", Toast.LENGTH_LONG).show()
+                    // Toast.makeText(context, "Código QR escaneado: ${it.text}", Toast.LENGTH_LONG).show()
                     // Aquí puedes mostrar el código QR en un frame distinto
-                    showQrCodeInFrame(it.text)
+                    showQrCodeInFrame(it.text, GlobalVariables.navController)
                 }
             }
 
@@ -51,9 +49,11 @@ class QrScannerFragment : Fragment() {
         barcodeView.resume()
     }
 
-    private fun showQrCodeInFrame(qrCode: String) {
+    private fun showQrCodeInFrame(qrCode: String, navController: NavHostController) {
         // Implementa la lógica para mostrar el código QR en un frame distinto
+        GlobalVariables.qrCode = qrCode
         onDestroyView()
+        navController.navigate("QrResultFragment")
     }
 
     override fun onResume() {
