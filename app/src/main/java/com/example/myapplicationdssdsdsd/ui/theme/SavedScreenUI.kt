@@ -7,7 +7,9 @@ import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -44,6 +47,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     var isLoading by remember { mutableStateOf(true) }
     var selectedItems by remember { mutableStateOf(setOf<QrItemData>()) }
     var isSelectionMode by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
 
     // Obtener los QR cuando se carga la pantalla
     LaunchedEffect(Unit) {
@@ -69,6 +73,27 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
             // Muestra un cargando mientras se obtienen los datos
             Text(text = "Cargando...", modifier = Modifier.align(Alignment.Center))
         } else {
+
+            Image(
+                painter = painterResource(id = R.drawable.hamburguer),
+                contentDescription = "Menu",
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(top = 16.dp, start = 16.dp)
+                    .clickable { expanded = true }
+                    .align(Alignment.TopStart),
+                contentScale = ContentScale.Fit
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+
+            }
+
+
             Column {
                 if (selectedItems.isNotEmpty()) {
                     SelectionActions(
@@ -82,19 +107,21 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         onDelete = { /* Acción para eliminar */ }
                     )
                 }
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 47.dp, start = 31.dp, end = 31.dp)
                 ) {
                     item {
+                        Spacer(modifier = Modifier.height(15.dp))
                         Text(
                             text = "QR guardados",
                             fontSize = 48.sp,
                             fontFamily = FontFamily(Font(R.font.lalezar_regular)),
                             color = Color(0xCC000000)
                         )
-                        Spacer(modifier = Modifier.height(38.dp))
+                        Spacer(modifier = Modifier.height(35.dp))
                     }
 
                     items(qrItems) { item ->
@@ -124,7 +151,6 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     ToolBox(navController)
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QrItem(item: QrItemData, isSelected: Boolean, isSelectionMode: Boolean, onSelectItem: (QrItemData) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
