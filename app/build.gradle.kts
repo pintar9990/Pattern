@@ -83,4 +83,5 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.3.0")
     implementation("androidx.compose.material:material-icons-extended:1.0.5")
+    implementation ("androidx.compose.ui:ui:1.4.0")
 }
