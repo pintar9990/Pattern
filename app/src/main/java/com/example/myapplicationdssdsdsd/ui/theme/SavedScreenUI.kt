@@ -197,9 +197,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
             }
         }
     }
-    ToolBox(navController, "SavedScreenUI") {
-        screen -> currentScreen = screen
-    }
+    ToolBox(navController, "SavedScreenUI") { screen -> currentScreen = screen }
 }
 
 @Composable
