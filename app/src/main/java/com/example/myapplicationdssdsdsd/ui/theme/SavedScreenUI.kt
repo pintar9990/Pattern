@@ -73,7 +73,6 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
             // Muestra un cargando mientras se obtienen los datos
             Text(text = "Cargando...", modifier = Modifier.align(Alignment.Center))
         } else {
-
             Image(
                 painter = painterResource(id = R.drawable.hamburguer),
                 contentDescription = "Menu",
@@ -85,14 +84,71 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                 contentScale = ContentScale.Fit
             )
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.align(Alignment.TopStart)
-            ) {
-
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent)
+                    .align(Alignment.BottomCenter)
+            ){
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    DropdownMenuItem(
+                        { Text("Añadir carpeta") },
+                        onClick = { /* Acción del elemento */ },
+                        modifier = Modifier,
+                        enabled = true,
+                        interactionSource = remember { MutableInteractionSource() },
+                        leadingIcon = {
+                            Image(
+                                painter = painterResource(id = R.drawable.add_folder_icon),
+                                contentDescription = "Menu",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .padding(top = 16.dp, start = 16.dp)
+                                    .clickable { expanded = true },
+                                contentScale = ContentScale.Fit
+                            )}
+                    )
+                    DropdownMenuItem(
+                        { Text("Compartir QR") },
+                        onClick = { /* Acción del elemento */ },
+                        modifier = Modifier,
+                        enabled = true,
+                        interactionSource = remember { MutableInteractionSource() },
+                        leadingIcon = {
+                            Image(
+                                painter = painterResource(id = R.drawable.share_icon),
+                                contentDescription = "Menu",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .padding(top = 16.dp, start = 16.dp)
+                                    .clickable { expanded = true },
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        { Text("Eliminar QR") },
+                        onClick = { /* Acción del elemento */ },
+                        modifier = Modifier,
+                        enabled = true,
+                        interactionSource = remember { MutableInteractionSource() },
+                        leadingIcon = {
+                            Image(
+                                painter = painterResource(id = R.drawable.delete_icon),
+                                contentDescription = "Menu",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .padding(top = 16.dp, start = 16.dp)
+                                    .clickable { expanded = true },
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    )
+                }
             }
-
 
             Column {
                 if (selectedItems.isNotEmpty()) {
