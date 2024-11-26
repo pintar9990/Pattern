@@ -181,6 +181,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     ToolBox(navController)
 
 }
+
 @Composable
 fun FolderItem(folder: FolderItemData, isDeleteMode: Boolean, onTapItem: (FolderItemData) -> Unit) {
     Row(
