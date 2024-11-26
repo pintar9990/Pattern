@@ -44,6 +44,8 @@ fun ProfileScreen(navController: NavController) {
     var newPassword by remember { mutableStateOf("") }  // Nueva contraseña
     var isSaving by remember { mutableStateOf(false) } // Indicador de carga
 
+    var currentScreen by remember { mutableStateOf("ProfileScreenUI") }
+
     // Carga inicial de datos
     LaunchedEffect(user) {
         user?.uid?.let { uid ->
@@ -90,20 +92,12 @@ fun ProfileScreen(navController: NavController) {
             )
 
             Image(
-                painter = painterResource(id = R.drawable.user_icon),
+                painter = painterResource(id = R.drawable.qr_icon),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .size(150.dp)
                     .padding(top = 16.dp),
                 contentScale = ContentScale.Fit
-            )
-
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(5.dp)
-                    .padding(top = 35.dp),
-                color = Color(0xFF555555)
             )
 
             Row(
@@ -205,11 +199,12 @@ fun ProfileScreen(navController: NavController) {
                 )
             )
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(5.dp)
-                    .padding(top = 49.dp),
+                    .padding(top = 35.dp),
+                thickness = 5.dp,
                 color = Color(0xFF555555)
             )
 
@@ -263,7 +258,7 @@ fun ProfileScreen(navController: NavController) {
                     }
                 },
                 modifier = Modifier
-                    .padding(top = 34.dp)
+                    .padding(top = 60.dp)
                     .width(232.dp)
                     .clip(RoundedCornerShape(20.dp)),
                 colors = ButtonDefaults.buttonColors(
@@ -282,5 +277,7 @@ fun ProfileScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(69.dp))
         }
     }
-    ToolBox(navController = navController)
+    ToolBox(navController = navController, currentScreen) {
+        screen -> currentScreen = screen
+    }
 }

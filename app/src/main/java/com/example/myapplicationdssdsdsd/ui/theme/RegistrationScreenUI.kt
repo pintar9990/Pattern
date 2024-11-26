@@ -68,6 +68,7 @@ fun RegistrationScreen(navController: NavHostController) {
                 value = username,
                 onValueChange = { username = it },
                 placeholder = { Text("Usuario", style = MaterialTheme.typography.bodyLarge) },
+                singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -84,6 +85,7 @@ fun RegistrationScreen(navController: NavHostController) {
                 value = email,
                 onValueChange = { email = it },
                 placeholder = { Text("Correo electrónico", style = MaterialTheme.typography.bodyLarge) },
+                singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -100,6 +102,7 @@ fun RegistrationScreen(navController: NavHostController) {
                 value = password,
                 onValueChange = { password = it },
                 placeholder = { Text("Contraseña", style = MaterialTheme.typography.bodyLarge) },
+                singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -168,6 +171,30 @@ fun RegistrationScreen(navController: NavHostController) {
                         color = Color.White,
                         fontSize = 20.sp
                     )
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 41.dp),
+                thickness = 5.dp,
+                color = Color(0xFF555555)
+            )
+
+            Button(
+                onClick = {navController.navigate("login") },
+                modifier = Modifier
+                    .padding(top = 29.dp)
+                    .width(169.dp)
+                    .height(56.dp)
+                    .shadow(4.dp, RoundedCornerShape(20.dp)),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(Color.White)
+            ) {
+                Text(
+                    text = "Iniciar Sesión",
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontSize = 20.sp)
                 )
             }
 

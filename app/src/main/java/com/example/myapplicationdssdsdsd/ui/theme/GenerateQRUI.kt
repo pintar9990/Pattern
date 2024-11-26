@@ -30,6 +30,7 @@ import com.example.myapplicationdssdsdsd.ToolBox
 @Composable
 fun GenerateQRUI(navController: NavHostController) {
     var linkText by remember { mutableStateOf("") }
+    var currentScreen by remember { mutableStateOf("GenerateQRUI") }
 
     Column(
         modifier = Modifier
@@ -71,7 +72,8 @@ fun GenerateQRUI(navController: NavHostController) {
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent
-            )
+            ),
+            singleLine = true
         )
 
         Button(
@@ -98,5 +100,7 @@ fun GenerateQRUI(navController: NavHostController) {
         }
 
     }
-    ToolBox(navController)
+    ToolBox(navController, currentScreen) {
+        screen -> currentScreen = screen
+    }
 }

@@ -82,6 +82,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                     .fillMaxWidth()
                     .padding(top = 75.dp)
                     .background(Color(0xFFECF4F5), CircleShape),
+                singleLine = true,
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.drawable.email_icon),
@@ -105,6 +106,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                     .fillMaxWidth()
                     .padding(top = 33.dp)
                     .background(Color(0xFFECF4F5), CircleShape),
+                singleLine = true,
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.drawable.password_icon),
@@ -170,7 +172,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 41.dp),
-                thickness = 1.dp,
+                thickness = 5.dp,
                 color = Color(0xFF555555)
             )
 
@@ -189,15 +191,6 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontSize = 20.sp)
                 )
             }
-
-            Text(
-                text = "Navega como invitado",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 24.sp,
-                    color = Color(0x99000000)
-                ),
-                modifier = Modifier.padding(top = 24.dp)
-            )
         }
     }
 }

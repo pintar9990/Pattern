@@ -150,7 +150,12 @@ fun ChatScreen(contactId: String, contactName: String) {
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier =
+                Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
                 TextField(
                     value = newMessage,
                     onValueChange = { newMessage = it },
