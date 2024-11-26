@@ -36,6 +36,7 @@ fun ContactsScreen(navController: NavController) {
     val contacts = remember { mutableStateListOf<Pair<String, String>>() } // UID y username de contactos
     val requests = remember { mutableStateListOf<Pair<String, String>>() } // UID y username de solicitudes
     var showDialog by remember { mutableStateOf(false) }  // Estado para mostrar el diálogo
+    var currentScreen by remember { mutableStateOf("ChatScreen") }
 
     // Obtener contactos y solicitudes pendientes desde la base de datos
     LaunchedEffect(Unit) {
@@ -116,7 +117,9 @@ fun ContactsScreen(navController: NavController) {
             }
         }
 
-        ToolBox(navController) // Aquí se incluye el ToolBox para navegar
+        ToolBox(navController, currentScreen){
+            screen -> currentScreen = screen
+        } // Aquí se incluye el ToolBox para navegar
     }
 }
 

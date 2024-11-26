@@ -44,6 +44,8 @@ fun ProfileScreen(navController: NavController) {
     var newPassword by remember { mutableStateOf("") }  // Nueva contraseña
     var isSaving by remember { mutableStateOf(false) } // Indicador de carga
 
+    var currentScreen by remember { mutableStateOf("ProfileScreenUI") }
+
     // Carga inicial de datos
     LaunchedEffect(user) {
         user?.uid?.let { uid ->
@@ -282,5 +284,7 @@ fun ProfileScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(69.dp))
         }
     }
-    ToolBox(navController = navController)
+    ToolBox(navController = navController, currentScreen) {
+        screen -> currentScreen = screen
+    }
 }

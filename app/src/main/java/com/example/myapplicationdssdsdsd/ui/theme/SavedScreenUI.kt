@@ -40,6 +40,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     var selectedItems by remember { mutableStateOf(setOf<QrItemData>()) }
     var isSelectionMode by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
+    var currentScreen by remember { mutableStateOf("SavedScreenUI") }
 
     // Obtener los QR cuando se carga la pantalla
     LaunchedEffect(Unit) {
@@ -196,7 +197,9 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
             }
         }
     }
-    ToolBox(navController)
+    ToolBox(navController, "SavedScreenUI") {
+        screen -> currentScreen = screen
+    }
 }
 
 @Composable

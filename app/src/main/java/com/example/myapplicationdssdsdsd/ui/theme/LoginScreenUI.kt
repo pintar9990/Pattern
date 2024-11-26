@@ -82,6 +82,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                     .fillMaxWidth()
                     .padding(top = 75.dp)
                     .background(Color(0xFFECF4F5), CircleShape),
+                singleLine = true,
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.drawable.email_icon),
@@ -105,6 +106,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                     .fillMaxWidth()
                     .padding(top = 33.dp)
                     .background(Color(0xFFECF4F5), CircleShape),
+                singleLine = true,
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.drawable.password_icon),
@@ -130,7 +132,7 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     // Inicio de sesión exitoso, navega a la pantalla principal
-                                    navController.navigate("GenerateQRUI")
+                                    navController.navigate("SavedScreenUI")
                                 } else {
                                     // Manejar errores
                                     errorMessage = when (task.exception?.message) {

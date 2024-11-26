@@ -49,6 +49,8 @@ fun QRCodeScreen(
     val database: DatabaseReference = FirebaseDatabase.getInstance("https://patterns-3f17e-default-rtdb.europe-west1.firebasedatabase.app").reference
     var buttonText by remember { mutableStateOf("Guardar QR") }
 
+    var currentScreen by remember { mutableStateOf("QrResultFragment") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -119,7 +121,9 @@ fun QRCodeScreen(
                     )
                 }
             }
-            ToolBox(navController)
+            ToolBox(navController, currentScreen) {
+                screen -> currentScreen = screen
+            }
         }
     }
 }
