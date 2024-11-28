@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -46,6 +47,13 @@ class MainActivity : FragmentActivity() {
 @Composable
 fun AppNavHost(fragmentActivity: FragmentActivity, navController: NavHostController) {
     NavHost(navController = navController, startDestination = "login") {
+
+        composable("SavedScreenUI") { SavedScreenUI(navController) }
+        composable("FolderView/{folderId}") { backStackEntry ->
+            val folderId = backStackEntry.arguments?.getString("folderId") ?: return@composable
+            FolderView(folderId, navController)
+        }
+
         composable(
             route = "login?registrationSuccess={registrationSuccess}",
             arguments = listOf(
