@@ -44,6 +44,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     var expanded by remember { mutableStateOf(false) }
     var isFolderDialogVisible by remember { mutableStateOf(false) }
     var folderId by remember { mutableStateOf("") }
+    var currentScreen by remember {mutableStateOf("SavedScreenUI")}
 
     // Obtener los QR y carpetas cuando se carga la pantalla
     LaunchedEffect(Unit) {
@@ -178,7 +179,9 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
         )
     }
 
-    ToolBox(navController)
+    ToolBox(navController, currentScreen) {
+        screen -> currentScreen = screen
+    }
 
 }
 
