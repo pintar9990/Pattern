@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -55,6 +56,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
+import com.example.myapplicationdssdsdsd.openUrl
+import com.example.myapplicationdssdsdsd.isValidUrl
 
 @Composable
 fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean = false) {
@@ -325,10 +328,10 @@ fun FolderView(folderId: String, navController: NavHostController) {
             )
         }
     }
-}
-
-@Composable
+}@Composable
 fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> Unit) {
+    val context = LocalContext.current
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -336,12 +339,24 @@ fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> U
             .background(if (isDeleteMode) Color.Red else Color.Transparent)
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onTap = { onTapItem(item) }
+                    onTap = {
+                        if (!isDeleteMode) {
+                            // Aquí validamos si la URL es válida
+                            val url = item.link
+                            if (isValidUrl(url)) {
+                                openUrl(context, url)  // Abre la URL directamente
+                            } else {
+                                // Si la URL no es válida, busca en Google
+                                val googleSearchUrl = "https://www.google.com/search?q=$url"
+                                openUrl(context, googleSearchUrl)
+                            }
+                        } else {
+                            onTapItem(item)
+                        }
+                    }
                 )
             }
-            .clickable {
-                onTapItem(item)
-            }
+            .padding(vertical = 10.dp)
     ) {
         val bitmap = remember { decodeBase64ToBitmap(item.imageUrl) }
         bitmap?.let {
