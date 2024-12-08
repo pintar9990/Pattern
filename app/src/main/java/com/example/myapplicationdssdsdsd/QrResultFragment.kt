@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -24,8 +25,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -37,11 +44,12 @@ import com.google.zxing.qrcode.QRCodeWriter
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun QRCodeScreen(
     navController: NavController,
-    ) {
+) {
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var isSaved by remember { mutableStateOf(false) }
     val linkText = GlobalVariables.qrCode
@@ -80,13 +88,26 @@ fun QRCodeScreen(
                         .size(200.dp)
                 )
 
-                Text(
-                    text = linkText,
-                    fontSize = 32.sp,
-                    fontFamily = FontFamily(Font(R.font.jaro_regular)),
-                    color = Color(0x99000000),
-                    modifier = Modifier.padding(top = 44.dp)
-                )
+                // Texto clickeable
+                val annotatedString = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color(0x99000000), fontSize = 32.sp)) {
+                        append("Abrir: ")
+                    }
+                    pushStringAnnotation(tag = "URL", annotation = linkText)
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Blue,
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(linkText)
+                    }
+                    pop()
+                }
+
+                OpenUrlClickableText(linkText)
+
 
                 Button(
                     onClick = {
@@ -106,12 +127,12 @@ fun QRCodeScreen(
                         .shadow(4.dp, RoundedCornerShape(20.dp)),
                     shape = RoundedCornerShape(20.dp),
                     colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color(0xFF555555),
-                            disabledContainerColor = Color.LightGray,
-                            disabledContentColor = Color.DarkGray
-                        ),
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color(0xFF555555),
+                        disabledContainerColor = Color.LightGray,
+                        disabledContentColor = Color.DarkGray
+                    ),
                     enabled = !isSaved
                 ) {
                     Text(
@@ -121,12 +142,13 @@ fun QRCodeScreen(
                     )
                 }
             }
-            ToolBox(navController, currentScreen) {
-                screen -> currentScreen = screen
+            ToolBox(navController, currentScreen) { screen ->
+                currentScreen = screen
             }
         }
     }
 }
+
 
 fun generateQRCode(text: String): Bitmap {
     val size = 512 // tamaño del código QR
