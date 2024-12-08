@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -65,15 +68,16 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     var expanded by remember { mutableStateOf(false) }
     var isFolderDialogVisible by remember { mutableStateOf(false) }
     var folderId by remember { mutableStateOf("") }
-    var currentScreen by remember {mutableStateOf("SavedScreenUI")}
+    var currentScreen by remember { mutableStateOf("SavedScreenUI") }
 
     // Obtener los QR y carpetas cuando se carga la pantalla
     LaunchedEffect(Unit) {
-        getUserQrItems { items ->
-            qrItems = items
-        }
         getUserFolders { items ->
             folderItems = items
+        }
+        getUserQrItems { items ->
+            val folderQrIds = folderItems.flatMap { it.qrs }
+            qrItems = items.filterNot { folderQrIds.contains(it.imageUrl) } // Excluir QR en carpetas
         }
         isLoading = false
     }
@@ -131,7 +135,6 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                             expanded = false
                         },
                     )
-
                 }
             }
 
@@ -169,14 +172,14 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                     Spacer(modifier = Modifier.height(14.dp))
                 }
 
-                // Luego, muestra los QR
+                // Muestra los QR que no están en carpetas
                 items(qrItems) { item ->
                     QrItem(
                         item = item,
                         isDeleteMode = isDeleteMode,
-                        onTapItem = { item ->
+                        onTapItem = { qrItem ->
                             if (isDeleteMode) {
-                                deleteQrItem(item) { updatedQrItems ->
+                                deleteQrItem(qrItem) { updatedQrItems ->
                                     qrItems = updatedQrItems
                                 }
                                 isDeleteMode = false
@@ -186,7 +189,6 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                     Spacer(modifier = Modifier.height(14.dp))
                 }
             }
-
         }
     }
 
@@ -194,18 +196,18 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     if (isFolderDialogVisible) {
         createFolderDialog(
             onFolderCreated = { createdFolderId ->
-                folderId = createdFolderId  // Actualiza el estado de folderId correctamente
+                folderId = createdFolderId // Actualiza el estado de folderId correctamente
                 isFolderDialogVisible = false
                 getUserFolders { items -> folderItems = items } // Actualiza la lista de carpetas
             }
         )
     }
 
-    ToolBox(navController, currentScreen) {
-        screen -> currentScreen = screen
+    ToolBox(navController, currentScreen) { screen ->
+        currentScreen = screen
     }
-
 }
+
 
 @Composable
 fun FolderItem(
@@ -248,10 +250,13 @@ fun FolderItem(
 @Composable
 fun FolderView(folderId: String, navController: NavHostController) {
     var qrItems by remember { mutableStateOf<List<QrItemData>>(emptyList()) }
+    var availableQrItems by remember { mutableStateOf<List<QrItemData>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var folderName by remember { mutableStateOf("") }
+    var showAddQrDialog by remember { mutableStateOf(false) }
+    var isDeleteMode by remember { mutableStateOf(false) }
 
-    // Cargar los QR y el nombre de la carpeta al entrar
+    // Cargar los QR y el nombre de la carpeta
     LaunchedEffect(folderId) {
         val folderRef = FirebaseDatabase.getInstance().getReference("users")
             .child(FirebaseAuth.getInstance().currentUser?.uid ?: return@LaunchedEffect)
@@ -262,8 +267,8 @@ fun FolderView(folderId: String, navController: NavHostController) {
             folderName = snapshot.child("name").getValue(String::class.java) ?: "Sin Nombre"
             val qrIds = snapshot.child("qrs").getValue<List<String>>() ?: emptyList()
             getUserQrItems { allQrs ->
-                val filteredQrs = allQrs.filter { qrIds.contains(it.imageUrl) }
-                qrItems = filteredQrs
+                qrItems = allQrs.filter { qrIds.contains(it.imageUrl) }
+                availableQrItems = allQrs.filterNot { qrIds.contains(it.imageUrl) }
                 isLoading = false
             }
         }.addOnFailureListener {
@@ -282,53 +287,112 @@ fun FolderView(folderId: String, navController: NavHostController) {
             .fillMaxSize()
             .background(gradient)
     ) {
-        // Mostrar el nombre de la carpeta
-        Text(
-            text = folderName,
-            fontSize = 48.sp,
-            fontFamily = FontFamily(Font(R.font.lalezar_regular)),
-            color = Color(0xCC000000),
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp)
-        )
-
-        if (isLoading) {
-            Text(text = "Cargando...", modifier = Modifier.align(Alignment.Center))
-        } else {
-            LazyColumn(
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Sección superior: Título y botón de navegación
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                items(qrItems) { item ->
-                    QrItem(
-                        item = item,
-                        isDeleteMode = false,
-                        onTapItem = { /* Acciones para QR */ }
+                // Botón para volver atrás
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.recent_icon),
+                        contentDescription = "Volver"
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                // Mostrar el nombre de la carpeta
+                Text(
+                    text = folderName,
+                    fontSize = 48.sp,
+                    fontFamily = FontFamily(Font(R.font.lalezar_regular)),
+                    color = Color(0xCC000000),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            // Contenido principal
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Cargando...")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    items(qrItems) { item ->
+                        QrItem(
+                            item = item,
+                            isDeleteMode = isDeleteMode,
+                            onTapItem = { qrItem ->
+                                if (isDeleteMode) {
+                                    removeQrFromFolder(folderId, qrItem.imageUrl) {
+                                        qrItems = qrItems - qrItem
+                                    }
+                                }
+                            },
+                            onRemoveFromFolder = {
+                                removeQrFromFolder(folderId, item.imageUrl) {
+                                    qrItems = qrItems - item
+                                    // Añadir el QR de nuevo a la lista principal
+                                    getUserQrItems { allQrs ->
+                                        availableQrItems = allQrs
+                                    }
+                                }
+                            }
+                        )
+                    }
+
                 }
             }
         }
 
-        // Botón para volver atrás
+        // Botón para añadir QR
         IconButton(
-            onClick = { navController.popBackStack() },
+            onClick = { showAddQrDialog = true },
             modifier = Modifier
-                .align(Alignment.TopStart)
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.recent_icon),
-                contentDescription = "Volver"
+                painter = painterResource(id = R.drawable.qr_icon),
+                contentDescription = "Añadir QR"
+            )
+        }
+
+        // Mostrar diálogo para seleccionar QR
+        if (showAddQrDialog) {
+            SelectQrDialog(
+                availableQrItems = availableQrItems,
+                onQrSelected = { qr ->
+                    addQrToFolder(folderId, qr.imageUrl) {
+                        qrItems = qrItems + qr
+                        availableQrItems = availableQrItems - qr
+                        showAddQrDialog = false
+                    }
+                },
+                onDismiss = { showAddQrDialog = false }
             )
         }
     }
+
 }
 
+
+
 @Composable
-fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> Unit) {
+fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> Unit, onRemoveFromFolder: (() -> Unit)? = null) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -358,8 +422,15 @@ fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> U
             fontFamily = FontFamily.Default,
             color = Color(0x99000000)
         )
+        onRemoveFromFolder?.let {
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = it) {
+                Icon(Icons.Default.RemoveCircle, contentDescription = "Sacar de la carpeta")
+            }
+        }
     }
 }
+
 
 
 @Composable
@@ -493,3 +564,83 @@ fun deleteQrItem(item: QrItemData, onItemsUpdated: (List<QrItemData>) -> Unit) {
         }
     })
 }
+
+fun addQrToFolder(folderId: String, qrId: String, onComplete: () -> Unit) {
+    val folderRef = FirebaseDatabase.getInstance().getReference("users")
+        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
+        .child("folders")
+        .child(folderId)
+        .child("qrs")
+
+    folderRef.get().addOnSuccessListener { snapshot ->
+        val currentQrIds = snapshot.getValue<List<String>>() ?: emptyList()
+        val updatedQrIds = currentQrIds + qrId
+
+        folderRef.setValue(updatedQrIds).addOnSuccessListener {
+            onComplete()
+        }.addOnFailureListener {
+            Log.e("FirebaseError", "Error al añadir QR a la carpeta: ${it.message}")
+        }
+    }
+}
+
+fun removeQrFromFolder(folderId: String, qrId: String, onComplete: () -> Unit) {
+    val folderRef = FirebaseDatabase.getInstance().getReference("users")
+        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
+        .child("folders")
+        .child(folderId)
+        .child("qrs")
+
+    folderRef.get().addOnSuccessListener { snapshot ->
+        val currentQrIds = snapshot.getValue<List<String>>() ?: emptyList()
+        val updatedQrIds = currentQrIds - qrId
+
+        folderRef.setValue(updatedQrIds).addOnSuccessListener {
+            onComplete()
+        }.addOnFailureListener {
+            Log.e("FirebaseError", "Error al eliminar QR de la carpeta: ${it.message}")
+        }
+    }
+}
+
+@Composable
+fun SelectQrDialog(
+    availableQrItems: List<QrItemData>,
+    onQrSelected: (QrItemData) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Seleccionar QR") },
+        text = {
+            LazyColumn {
+                items(availableQrItems) { qrItem ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onQrSelected(qrItem) }
+                            .padding(vertical = 8.dp)
+                    ) {
+                        val bitmap = decodeBase64ToBitmap(qrItem.imageUrl)
+                        bitmap?.let {
+                            Image(
+                                bitmap = it.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(qrItem.link, fontSize = 16.sp)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Cerrar") }
+        }
+    )
+}
+
+
+
