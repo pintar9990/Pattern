@@ -32,6 +32,14 @@ import com.example.myapplicationdssdsdsd.decodeBase64ToBitmap
 import com.example.myapplicationdssdsdsd.QrItemData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -241,14 +249,49 @@ fun MessageBubble(message: String, isSentByCurrentUser: Boolean, modifier: Modif
                 .widthIn(max = 300.dp)
                 .wrapContentHeight()
         ) {
-            Text(
-                text = message,
-                modifier = Modifier.padding(12.dp),
-                color = if (isSentByCurrentUser) Color.White else Color.Black
-            )
+            if (message.startsWith("http://") || message.startsWith("https://")) {
+                val context = LocalContext.current
+                val annotatedText = buildAnnotatedString {
+                    pushStringAnnotation(tag = "URL", annotation = message)
+                    withStyle(
+                        style = TextStyle(
+                            color = if (isSentByCurrentUser) Color.White else Color.Blue,
+                            fontFamily = FontFamily(Font(R.font.lalezar_regular)), // Aplica la fuente aquí
+                            fontSize = 16.sp, // Ajusta al mismo tamaño
+                            textDecoration = TextDecoration.Underline // Mantén el subrayado
+                        ).toSpanStyle()
+                    ) {
+                        append(message)
+                    }
+                    pop()
+                }
+                ClickableText(
+                    text = annotatedText,
+                    onClick = { offset ->
+                        annotatedText.getStringAnnotations("URL", offset, offset)
+                            .firstOrNull()?.let { annotation ->
+                                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))
+                                context.startActivity(browserIntent)
+                            }
+                    },
+                    modifier = Modifier.padding(12.dp)
+                )
+            } else {
+                Text(
+                    text = message,
+                    modifier = Modifier.padding(12.dp),
+                    color = if (isSentByCurrentUser) Color.White else Color.Black,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.lalezar_regular)), // Aplica la fuente aquí también
+                        fontSize = 16.sp // Mismo tamaño
+                    )
+                )
+            }
         }
     }
 }
+
+
 
 fun chatId(user1: String, user2: String): String {
     return if (user1 < user2) "$user1-$user2" else "$user2-$user1"
