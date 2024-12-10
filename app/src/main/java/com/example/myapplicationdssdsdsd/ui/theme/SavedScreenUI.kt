@@ -227,7 +227,11 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                 ) {
 
                     IconButton(
-                        onClick = { isDeleteMode = false}
+
+                        onClick = {
+                            isDeleteMode = false
+                            selectedItems = emptySet()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.back_arrow_icon),
