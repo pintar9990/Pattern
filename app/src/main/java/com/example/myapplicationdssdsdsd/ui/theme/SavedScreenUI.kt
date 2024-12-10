@@ -1,10 +1,12 @@
 package com.example.myapplicationdssdsdsd.ui.theme
 
 import android.util.Log
+import android.widget.CheckBox
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -69,12 +73,16 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     var isFolderDialogVisible by remember { mutableStateOf(false) }
     var folderId by remember { mutableStateOf("") }
     var currentScreen by remember { mutableStateOf("SavedScreenUI") }
+    var searchText by remember { mutableStateOf("") }
+    var selectedItems by remember { mutableStateOf<Set<String>>(emptySet()) }
 
-    // Obtener los QR y carpetas cuando se carga la pantalla
-    LaunchedEffect(Unit) {
-        getUserFolders { items ->
-            folderItems = items
-        }
+    // Filtrado según la búsqueda
+    val filteredFolders = folderItems.filter { it.name.contains(searchText, ignoreCase = true) }
+    val filteredQrItems = qrItems.filter { it.link.contains(searchText, ignoreCase = true) }
+
+    LaunchedEffect(Unit) {        getUserFolders { items ->
+        folderItems = items
+    }
         getUserQrItems { items ->
             val folderQrIds = folderItems.flatMap { it.qrs }
             qrItems = items.filterNot { folderQrIds.contains(it.imageUrl) } // Excluir QR en carpetas
@@ -91,28 +99,41 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(gradient) // Fondo general
     ) {
         if (isLoading) {
             Text(text = "Cargando...", modifier = Modifier.align(Alignment.Center))
         } else {
-            Image(
-                painter = painterResource(id = R.drawable.hamburguer),
-                contentDescription = "Menu",
-                modifier = Modifier
-                    .size(60.dp)
-                    .padding(top = 16.dp, start = 16.dp)
-                    .clickable { expanded = true }
-                    .align(Alignment.TopStart),
-                contentScale = ContentScale.Fit
-            )
-
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Transparent)
-                    .align(Alignment.BottomCenter)
             ) {
+                // Menú desplegable y búsqueda
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.hamburguer),
+                        contentDescription = "Menu",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(16.dp)
+                            .clickable { expanded = true },
+                        contentScale = ContentScale.Fit
+                    )
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 16.dp),
+                        placeholder = { Text("Buscar...") }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
@@ -125,10 +146,6 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         },
                     )
                     DropdownMenuItem(
-                        { Text("Compartir QR") },
-                        onClick = { /* Acción para compartir QR */ },
-                    )
-                    DropdownMenuItem(
                         { Text("Eliminar QR o Carpeta") },
                         onClick = {
                             isDeleteMode = true // Activamos el modo de eliminación
@@ -136,83 +153,128 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         },
                     )
                 }
+
+                // Lista de carpetas y QR
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f) // Deja espacio para el botón en la parte inferior
+                        .padding(horizontal = 16.dp)
+                ) {
+                    // Mostrar carpetas filtradas
+                    items(filteredFolders) { folder ->
+                        FolderItem(
+                            folder = folder,
+                            isDeleteMode = isDeleteMode,
+                            isSelected = selectedItems.contains(folder.id),
+                            onSelect = { isSelected ->
+                                selectedItems = if (isSelected) {
+                                    selectedItems + folder.id
+                                } else {
+                                    selectedItems - folder.id
+                                }
+                            },
+                            navController = navController,
+                            onTapItem = { item ->
+                                if (isDeleteMode) {
+                                    selectedItems = selectedItems + item.id
+                                } else {
+                                    navController.navigate("FolderView/${folder.id}")
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                    }
+
+                    // Mostrar códigos QR filtrados
+                    items(filteredQrItems) { item ->
+                        QrItem(
+                            item = item,
+                            isDeleteMode = isDeleteMode,
+                            isSelected = selectedItems.contains(item.imageUrl),
+                            onSelect = { isSelected ->
+                                selectedItems = if (isSelected) {
+                                    selectedItems + item.imageUrl
+                                } else {
+                                    selectedItems - item.imageUrl
+                                }
+                            },
+                            onTapItem = { qrItem ->
+                                if (isDeleteMode) {
+                                    selectedItems = selectedItems + qrItem.imageUrl
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                    }
+                }
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 47.dp, start = 31.dp, end = 31.dp)
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Text(
-                        text = "QR guardados",
-                        fontSize = 48.sp,
-                        fontFamily = FontFamily(Font(R.font.lalezar_regular)),
-                        color = Color(0xCC000000)
-                    )
-                    Spacer(modifier = Modifier.height(35.dp))
-                }
+            // Botón para eliminar, visible sólo en modo eliminación
+            if (isDeleteMode) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter) // Asegura que esté en la parte inferior
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
 
-                // Primero, muestra las carpetas si no estamos en el modo de eliminación
-                items(folderItems) { folder ->
-                    FolderItem(
-                        folder = folder,
-                        isDeleteMode = isDeleteMode,
-                        navController = navController,
-                        onTapItem = { item ->
-                            if (isDeleteMode) {
-                                deleteFolder(item) { updatedFolderItems ->
-                                    folderItems = updatedFolderItems
-                                }
-                                isDeleteMode = false
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-                }
+                    IconButton(
+                        onClick = { isDeleteMode = false}
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.back_arrow_icon),
+                            contentDescription = "Desactivar modo de selección"
+                        )
+                    }
 
-                // Muestra los QR que no están en carpetas
-                items(qrItems) { item ->
-                    QrItem(
-                        item = item,
-                        isDeleteMode = isDeleteMode,
-                        onTapItem = { qrItem ->
-                            if (isDeleteMode) {
-                                deleteQrItem(qrItem) { updatedQrItems ->
-                                    qrItems = updatedQrItems
+                    Button(
+                        onClick = {
+                            // Eliminar los elementos seleccionados
+                            selectedItems.forEach { id ->
+                                folderItems.find { it.id == id }?.let {
+                                    deleteFolder(it) { updatedFolders -> folderItems = updatedFolders }
                                 }
-                                isDeleteMode = false
+                                qrItems.find { it.imageUrl == id }?.let {
+                                    deleteQrItem(it) { updatedQrs -> qrItems = updatedQrs }
+                                }
                             }
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
+                            isDeleteMode = false
+                            selectedItems = emptySet()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Eliminar seleccionados")
+                    }
                 }
             }
         }
     }
 
+
     // Mostrar el diálogo de carpeta si está visible
     if (isFolderDialogVisible) {
         createFolderDialog(
             onFolderCreated = { createdFolderId ->
-                folderId = createdFolderId // Actualiza el estado de folderId correctamente
+                folderId = createdFolderId
                 isFolderDialogVisible = false
-                getUserFolders { items -> folderItems = items } // Actualiza la lista de carpetas
-            }
+                getUserFolders { items -> folderItems = items }
+            },
+            onDismiss = {isFolderDialogVisible = false}
         )
     }
-
     ToolBox(navController, currentScreen) { screen ->
         currentScreen = screen
     }
 }
 
-
 @Composable
 fun FolderItem(
     folder: FolderItemData,
     isDeleteMode: Boolean,
+    isSelected: Boolean,
+    onSelect: (Boolean) -> Unit,
     navController: NavHostController,
     onTapItem: (FolderItemData) -> Unit
 ) {
@@ -222,15 +284,18 @@ fun FolderItem(
             .fillMaxWidth()
             .clickable {
                 if (!isDeleteMode) {
-                    // Navegación dentro de la carpeta
                     navController.navigate("FolderView/${folder.id}")
-                } else {
-                    onTapItem(folder)
                 }
             }
-            .background(if (isDeleteMode) Color.Red else Color.Transparent)
-            .padding(vertical = 10.dp)
+
+        .background(if (isSelected) Color.Red else Color.Transparent)
     ) {
+        if (isDeleteMode) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = onSelect
+            )
+        }
         // Contenido de FolderItem
         Image(
             painter = painterResource(id = R.drawable.folder_icon),
@@ -246,6 +311,7 @@ fun FolderItem(
         )
     }
 }
+
 
 @Composable
 fun FolderView(folderId: String, navController: NavHostController) {
@@ -302,7 +368,7 @@ fun FolderView(folderId: String, navController: NavHostController) {
                     modifier = Modifier.align(Alignment.CenterStart)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.recent_icon),
+                        painter = painterResource(id = R.drawable.back_arrow_icon),
                         contentDescription = "Volver"
                     )
                 }
@@ -335,6 +401,8 @@ fun FolderView(folderId: String, navController: NavHostController) {
                         QrItem(
                             item = item,
                             isDeleteMode = isDeleteMode,
+                            isSelected = false,
+                            onSelect = {},
                             onTapItem = { qrItem ->
                                 if (isDeleteMode) {
                                     removeQrFromFolder(folderId, qrItem.imageUrl) {
@@ -389,15 +457,19 @@ fun FolderView(folderId: String, navController: NavHostController) {
 
 }
 
-
-
 @Composable
-fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> Unit, onRemoveFromFolder: (() -> Unit)? = null) {
+fun QrItem(
+    item: QrItemData,
+    isDeleteMode: Boolean,
+    isSelected: Boolean,
+    onSelect: (Boolean) -> Unit,
+    onTapItem: (QrItemData) -> Unit,
+    onRemoveFromFolder: (() -> Unit)? = null) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (isDeleteMode) Color.Red else Color.Transparent)
+            .background(if (isSelected) Color.Red else Color.Transparent)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { onTapItem(item) }
@@ -428,17 +500,23 @@ fun QrItem(item: QrItemData, isDeleteMode: Boolean, onTapItem: (QrItemData) -> U
                 Icon(Icons.Default.RemoveCircle, contentDescription = "Sacar de la carpeta")
             }
         }
+        if (isDeleteMode){
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = onSelect
+            )
+        }
     }
 }
 
 
 
 @Composable
-fun createFolderDialog(onFolderCreated: (String) -> Unit) {
+fun createFolderDialog(onFolderCreated: (String) -> Unit, onDismiss: () -> Unit) {
     var folderName by remember { mutableStateOf("") }
 
     AlertDialog(
-        onDismissRequest = { /* Nada que hacer al descartar */ },
+        onDismissRequest = { onDismiss() },
         title = { Text("Crear carpeta") },
         text = {
             TextField(
@@ -460,7 +538,7 @@ fun createFolderDialog(onFolderCreated: (String) -> Unit) {
             }
         },
         dismissButton = {
-            TextButton(onClick = { /* Cancelar */ }) {
+            TextButton(onClick = { onDismiss() }) {
                 Text("Cancelar")
             }
         }
