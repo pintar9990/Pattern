@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -79,21 +81,30 @@ fun openUrl(context: Context, url: String) {
     context.startActivity(intent)
 }
 
-
 @Composable
 fun OpenUrlClickableText(linkText: String) {
     val context = LocalContext.current
 
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(color = Color(0x99000000), fontSize = 32.sp)) {
+        // Texto "Abrir:" con estilo consistente
+        withStyle(
+            style = SpanStyle(
+                color = Color(0x99000000),
+                fontSize = 32.sp,
+                fontFamily = FontFamily(Font(R.font.jaro_regular)) // Aplicar la fuente personalizada
+            )
+        ) {
             append("Abrir: ")
         }
+        // Enlace clickeable con estilo consistente
         pushStringAnnotation(tag = "URL", annotation = linkText)
         withStyle(
             style = SpanStyle(
                 color = Color.Blue,
                 textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 32.sp,
+                fontFamily = FontFamily(Font(R.font.jaro_regular)) // Fuente personalizada
             )
         ) {
             append(linkText)
