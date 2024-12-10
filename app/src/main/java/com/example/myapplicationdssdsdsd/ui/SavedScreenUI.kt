@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -41,9 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -51,8 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.model.FolderItemData
-import com.example.myapplicationdssdsdsd.model.QrItemData
 import com.example.myapplicationdssdsdsd.control.ToolBox
 import com.example.myapplicationdssdsdsd.control.addQrToFolder
 import com.example.myapplicationdssdsdsd.control.createFolder
@@ -61,9 +53,11 @@ import com.example.myapplicationdssdsdsd.control.deleteFolder
 import com.example.myapplicationdssdsdsd.control.deleteQrItem
 import com.example.myapplicationdssdsdsd.control.getUserFolders
 import com.example.myapplicationdssdsdsd.control.getUserQrItems
-import com.example.myapplicationdssdsdsd.control.isValidUrl
-import com.example.myapplicationdssdsdsd.control.openUrl
 import com.example.myapplicationdssdsdsd.control.removeQrFromFolder
+import com.example.myapplicationdssdsdsd.model.FolderItemData
+import com.example.myapplicationdssdsdsd.model.FolderItemView
+import com.example.myapplicationdssdsdsd.model.QrItemData
+import com.example.myapplicationdssdsdsd.model.QrItemView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.getValue
@@ -86,12 +80,11 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     val filteredFolders = folderItems.filter { it.name.contains(searchText, ignoreCase = true) }
     val filteredQrItems = qrItems.filter { it.link.contains(searchText, ignoreCase = true) }
 
-    LaunchedEffect(Unit) {        getUserFolders { items ->
-        folderItems = items
-    }
+    LaunchedEffect(Unit) {
+        getUserFolders { items -> folderItems = items }
         getUserQrItems { items ->
             val folderQrIds = folderItems.flatMap { it.qrs }
-            qrItems = items.filterNot { folderQrIds.contains(it.imageUrl) } // Excluir QR en carpetas
+            qrItems = items.filterNot { folderQrIds.contains(it.imageUrl) }
         }
         isLoading = false
     }
@@ -105,7 +98,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient) // Fondo general
+            .background(gradient)
     ) {
         if (isLoading) {
             Text(text = "Cargando...", modifier = Modifier.align(Alignment.Center))
@@ -168,7 +161,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                 ) {
                     // Mostrar carpetas filtradas
                     items(filteredFolders) { folder ->
-                        FolderItem(
+                        FolderItemView(
                             folder = folder,
                             isDeleteMode = isDeleteMode,
                             isSelected = selectedItems.contains(folder.id),
@@ -187,13 +180,13 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                                     navController.navigate("FolderView/${folder.id}")
                                 }
                             }
-                        )
+                        ).Render()
                         Spacer(modifier = Modifier.height(14.dp))
                     }
 
                     // Mostrar códigos QR filtrados
                     items(filteredQrItems) { item ->
-                        QrItem(
+                        QrItemView(
                             item = item,
                             isDeleteMode = isDeleteMode,
                             isSelected = selectedItems.contains(item.imageUrl),
@@ -209,7 +202,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                                     selectedItems = selectedItems + qrItem.imageUrl
                                 }
                             }
-                        )
+                        ).Render()
                         Spacer(modifier = Modifier.height(14.dp))
                     }
                 }
@@ -227,7 +220,6 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                 ) {
 
                     IconButton(
-
                         onClick = {
                             isDeleteMode = false
                             selectedItems = emptySet()
@@ -259,9 +251,9 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                     }
                 }
             }
+
         }
     }
-
 
     // Mostrar el diálogo de carpeta si está visible
     if (isFolderDialogVisible) {
@@ -271,57 +263,12 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                 isFolderDialogVisible = false
                 getUserFolders { items -> folderItems = items }
             },
-            onDismiss = {isFolderDialogVisible = false}
+            onDismiss = { isFolderDialogVisible = false }
         )
     }
-    ToolBox(navController, currentScreen) { screen ->
-        currentScreen = screen
-    }
+
+    ToolBox(navController, currentScreen) { screen -> currentScreen = screen }
 }
-
-@Composable
-fun FolderItem(
-    folder: FolderItemData,
-    isDeleteMode: Boolean,
-    isSelected: Boolean,
-    onSelect: (Boolean) -> Unit,
-    navController: NavHostController,
-    onTapItem: (FolderItemData) -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                if (!isDeleteMode) {
-                    navController.navigate("FolderView/${folder.id}")
-                }
-            }
-
-        .background(if (isSelected) Color.Red else Color.Transparent)
-    ) {
-        if (isDeleteMode) {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = onSelect
-            )
-        }
-        // Contenido de FolderItem
-        Image(
-            painter = painterResource(id = R.drawable.folder_icon),
-            contentDescription = "Carpeta",
-            modifier = Modifier.size(40.dp)
-        )
-        Spacer(modifier = Modifier.width(15.dp))
-        Text(
-            text = folder.name,
-            fontSize = 20.sp,
-            fontFamily = FontFamily.Default,
-            color = Color(0x99000000)
-        )
-    }
-}
-
 
 @Composable
 fun FolderView(folderId: String, navController: NavHostController) {
@@ -408,7 +355,8 @@ fun FolderView(folderId: String, navController: NavHostController) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     items(qrItems) { item ->
-                        QrItem(
+                        // Usamos la clase QrItemView
+                        QrItemView(
                             item = item,
                             isDeleteMode = isDeleteMode,
                             isSelected = false,
@@ -429,7 +377,7 @@ fun FolderView(folderId: String, navController: NavHostController) {
                                     }
                                 }
                             }
-                        )
+                        ).Render() // Llamada al método Render de QrItemView
                     }
 
                 }
@@ -465,70 +413,6 @@ fun FolderView(folderId: String, navController: NavHostController) {
         }
     }
 
-}
-@Composable
-fun QrItem(
-    item: QrItemData,
-    isDeleteMode: Boolean,
-    isSelected: Boolean,
-    onSelect: (Boolean) -> Unit,
-    onTapItem: (QrItemData) -> Unit,
-    onRemoveFromFolder: (() -> Unit)? = null
-) {
-    val context = LocalContext.current // Obtén el contexto aquí
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(if (isSelected) Color.Red else Color.Transparent)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        if (!isDeleteMode) {
-                            val url = item.link
-                            if (isValidUrl(url)) {
-                                openUrl(context, url)  // Abre la URL directamente
-                            } else {
-                                val googleSearchUrl = "https://www.google.com/search?q=$url"
-                                openUrl(context, googleSearchUrl)
-                            }
-                        } else {
-                            onTapItem(item)
-                        }
-                    }
-                )
-            }
-            .padding(vertical = 10.dp)
-    ) {
-        val bitmap = remember { decodeBase64ToBitmap(item.imageUrl) }
-        bitmap?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.size(72.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(15.dp))
-        Text(
-            text = item.link,
-            fontSize = 20.sp,
-            fontFamily = FontFamily.Default,
-            color = Color(0x99000000)
-        )
-        onRemoveFromFolder?.let {
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = it) {
-                Icon(Icons.Default.RemoveCircle, contentDescription = "Sacar de la carpeta")
-            }
-        }
-        if (isDeleteMode) {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = onSelect
-            )
-        }
-    }
 }
 
 @Composable
@@ -603,6 +487,3 @@ fun SelectQrDialog(
         }
     )
 }
-
-
-

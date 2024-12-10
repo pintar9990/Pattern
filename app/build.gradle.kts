@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.play.services.mlkit.barcode.scanning)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.animation.core.lint)
+    implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.ui.test.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
