@@ -1,7 +1,6 @@
 package com.example.myapplicationdssdsdsd.ui.theme
 
 import android.util.Log
-import android.widget.CheckBox
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,13 +49,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.myapplicationdssdsdsd.FolderItemData
-import com.example.myapplicationdssdsdsd.QrItemData
+import com.example.myapplicationdssdsdsd.control.FolderItemData
+import com.example.myapplicationdssdsdsd.control.QrItemData
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.ToolBox
-import com.example.myapplicationdssdsdsd.decodeBase64ToBitmap
-import com.example.myapplicationdssdsdsd.isValidUrl
-import com.example.myapplicationdssdsdsd.openUrl
+import com.example.myapplicationdssdsdsd.control.ToolBox
+import com.example.myapplicationdssdsdsd.control.decodeBase64ToBitmap
+import com.example.myapplicationdssdsdsd.control.isValidUrl
+import com.example.myapplicationdssdsdsd.control.openUrl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -65,8 +64,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import androidx.compose.ui.platform.LocalContext
-import com.example.myapplicationdssdsdsd.openUrl
-import com.example.myapplicationdssdsdsd.isValidUrl
 
 
 @Composable

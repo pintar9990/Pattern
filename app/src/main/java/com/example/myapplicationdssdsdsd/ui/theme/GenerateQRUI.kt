@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.GlobalVariables
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.ToolBox
+import com.example.myapplicationdssdsdsd.control.ToolBox
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

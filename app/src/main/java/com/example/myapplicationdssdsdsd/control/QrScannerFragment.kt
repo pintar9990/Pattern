@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd
+package com.example.myapplicationdssdsdsd.control
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavHostController
+import com.example.myapplicationdssdsdsd.GlobalVariables
+import com.example.myapplicationdssdsdsd.R
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback

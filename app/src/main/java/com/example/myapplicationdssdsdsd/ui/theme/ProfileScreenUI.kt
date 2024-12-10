@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.ToolBox
+import com.example.myapplicationdssdsdsd.control.ToolBox
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.*

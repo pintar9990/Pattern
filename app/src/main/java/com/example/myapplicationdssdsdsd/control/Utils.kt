@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.example.myapplicationdssdsdsd
+package com.example.myapplicationdssdsdsd.control
 
 
 import android.content.Context
@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 
 
 // Función para decodificar la cadena base64 a un Bitmap
