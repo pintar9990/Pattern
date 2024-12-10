@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -43,27 +43,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.myapplicationdssdsdsd.control.FolderItemData
-import com.example.myapplicationdssdsdsd.control.QrItemData
 import com.example.myapplicationdssdsdsd.R
+import com.example.myapplicationdssdsdsd.model.FolderItemData
+import com.example.myapplicationdssdsdsd.model.QrItemData
 import com.example.myapplicationdssdsdsd.control.ToolBox
+import com.example.myapplicationdssdsdsd.control.addQrToFolder
+import com.example.myapplicationdssdsdsd.control.createFolder
 import com.example.myapplicationdssdsdsd.control.decodeBase64ToBitmap
+import com.example.myapplicationdssdsdsd.control.deleteFolder
+import com.example.myapplicationdssdsdsd.control.deleteQrItem
+import com.example.myapplicationdssdsdsd.control.getUserFolders
+import com.example.myapplicationdssdsdsd.control.getUserQrItems
 import com.example.myapplicationdssdsdsd.control.isValidUrl
 import com.example.myapplicationdssdsdsd.control.openUrl
+import com.example.myapplicationdssdsdsd.control.removeQrFromFolder
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
-import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
@@ -262,7 +265,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
 
     // Mostrar el diálogo de carpeta si está visible
     if (isFolderDialogVisible) {
-        createFolderDialog(
+        CreateFolderDialog(
             onFolderCreated = { createdFolderId ->
                 folderId = createdFolderId
                 isFolderDialogVisible = false
@@ -528,10 +531,8 @@ fun QrItem(
     }
 }
 
-
-
 @Composable
-fun createFolderDialog(onFolderCreated: (String) -> Unit, onDismiss: () -> Unit) {
+fun CreateFolderDialog(onFolderCreated: (String) -> Unit, onDismiss: () -> Unit) {
     var folderName by remember { mutableStateOf("") }
 
     AlertDialog(
@@ -562,142 +563,6 @@ fun createFolderDialog(onFolderCreated: (String) -> Unit, onDismiss: () -> Unit)
             }
         }
     )
-}
-
-fun createFolder(name: String, onFolderCreated: (String) -> Unit) {
-    val folderRef = FirebaseDatabase.getInstance().getReference("users")
-        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
-        .child("folders")
-        .push()
-
-    folderRef.setValue(mapOf("name" to name, "qrs" to emptyList<String>())).addOnSuccessListener {
-        onFolderCreated(folderRef.key ?: "") // Pasa el ID de la carpeta recién creada
-    }
-}
-
-fun getUserQrItems(onComplete: (List<QrItemData>) -> Unit) {
-    val user = FirebaseAuth.getInstance().currentUser
-    user?.uid?.let { uid ->
-        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
-        database.child("users").child(uid).child("qrs")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val qrItems = mutableListOf<QrItemData>()
-                    for (qrSnapshot in snapshot.children) {
-                        val qr = qrSnapshot.getValue(QrItemData::class.java)
-                        qr?.let {
-                            qrItems.add(it)
-                        }
-                    }
-                    onComplete(qrItems) // Devuelve los QR encontrados
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Error al obtener datos: ${error.message}")
-                }
-            })
-    }
-}
-
-fun getUserFolders(onComplete: (List<FolderItemData>) -> Unit) {
-    val user = FirebaseAuth.getInstance().currentUser
-    user?.uid?.let { uid ->
-        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
-        database.child("users").child(uid).child("folders")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val folderItems = mutableListOf<FolderItemData>()
-                    for (folderSnapshot in snapshot.children) {
-                        val folder = folderSnapshot.getValue(FolderItemData::class.java)
-                        folder?.let {
-                            val folderWithId = it.copy(id = folderSnapshot.key ?: "") // Asignar el ID correctamente
-                            folderItems.add(folderWithId)
-                        }
-                    }
-                    onComplete(folderItems) // Devuelve las carpetas con el ID asignado correctamente
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Error al obtener carpetas: ${error.message}")
-                }
-            })
-    }
-}
-
-
-fun deleteFolder(folder: FolderItemData, onItemsUpdated: (List<FolderItemData>) -> Unit) {
-    val dbRef = FirebaseDatabase.getInstance().getReference("users")
-        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
-        .child("folders")
-
-    dbRef.child(folder.id).removeValue().addOnSuccessListener {
-        // Actualiza la lista de carpetas después de eliminar la carpeta seleccionada
-        getUserFolders { items ->
-            onItemsUpdated(items)
-        }
-    }.addOnFailureListener {
-        Log.e("FirebaseError", "Error al eliminar la carpeta: ${it.message}")
-    }
-}
-
-fun deleteQrItem(item: QrItemData, onItemsUpdated: (List<QrItemData>) -> Unit) {
-    val dbRef = FirebaseDatabase.getInstance().getReference("users")
-        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
-        .child("qrs")
-    dbRef.orderByChild("imageUrl").equalTo(item.imageUrl).addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            snapshot.children.forEach {
-                it.ref.removeValue() // Eliminar el QR
-            }
-
-            // Actualiza la lista de QR después de eliminarlo
-            getUserQrItems { items ->
-                onItemsUpdated(items)  // Actualiza la UI con la nueva lista
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            Log.e("FirebaseError", "Error al eliminar QR: ${error.message}")
-        }
-    })
-}
-
-fun addQrToFolder(folderId: String, qrId: String, onComplete: () -> Unit) {
-    val folderRef = FirebaseDatabase.getInstance().getReference("users")
-        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
-        .child("folders")
-        .child(folderId)
-        .child("qrs")
-
-    folderRef.get().addOnSuccessListener { snapshot ->
-        val currentQrIds = snapshot.getValue<List<String>>() ?: emptyList()
-        val updatedQrIds = currentQrIds + qrId
-
-        folderRef.setValue(updatedQrIds).addOnSuccessListener {
-            onComplete()
-        }.addOnFailureListener {
-            Log.e("FirebaseError", "Error al añadir QR a la carpeta: ${it.message}")
-        }
-    }
-}
-
-fun removeQrFromFolder(folderId: String, qrId: String, onComplete: () -> Unit) {
-    val folderRef = FirebaseDatabase.getInstance().getReference("users")
-        .child(FirebaseAuth.getInstance().currentUser?.uid ?: return)
-        .child("folders")
-        .child(folderId)
-        .child("qrs")
-
-    folderRef.get().addOnSuccessListener { snapshot ->
-        val currentQrIds = snapshot.getValue<List<String>>() ?: emptyList()
-        val updatedQrIds = currentQrIds - qrId
-
-        folderRef.setValue(updatedQrIds).addOnSuccessListener {
-            onComplete()
-        }.addOnFailureListener {
-            Log.e("FirebaseError", "Error al eliminar QR de la carpeta: ${it.message}")
-        }
-    }
 }
 
 @Composable

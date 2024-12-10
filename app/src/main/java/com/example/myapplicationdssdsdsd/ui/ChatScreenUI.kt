@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplicationdssdsdsd.R
 import com.example.myapplicationdssdsdsd.control.decodeBase64ToBitmap
-import com.example.myapplicationdssdsdsd.control.QrItemData
+import com.example.myapplicationdssdsdsd.model.QrItemData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import android.content.Intent

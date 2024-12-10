@@ -1,9 +1,7 @@
-package com.example.myapplicationdssdsdsd
+package com.example.myapplicationdssdsdsd.ui
 
 import android.graphics.Bitmap
 import android.os.Build
-import android.util.Base64
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,15 +31,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplicationdssdsdsd.GlobalVariables
+import com.example.myapplicationdssdsdsd.R
 import com.example.myapplicationdssdsdsd.control.OpenUrlClickableText
 import com.example.myapplicationdssdsdsd.control.ToolBox
+import com.example.myapplicationdssdsdsd.control.saveQrToFirebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
-import java.io.ByteArrayOutputStream
-import java.util.UUID
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -160,32 +159,4 @@ fun generateQRCode(text: String): Bitmap {
         }
     }
     return bitmap
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun saveQrToFirebase(link: String, bitmap: Bitmap, auth: FirebaseAuth, database: DatabaseReference, onSuccess: () -> Unit) {
-    val user = auth.currentUser
-    user?.uid?.let { uid ->
-        val qrId = UUID.randomUUID().toString()
-        val qrRef = database.child("users").child(uid).child("qrs").child(qrId)
-
-        // Convertir el bitmap a un string base64
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        val qrImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
-
-        val qrData = mapOf(
-            "imageUrl" to "data:image/png;base64,$qrImage",
-            "link" to link
-        )
-
-        qrRef.setValue(qrData)
-            .addOnSuccessListener {
-                Log.d("Firebase", "QR guardado exitosamente")
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firebase", "Error al guardar el QR", e)
-            }
-    }
 }

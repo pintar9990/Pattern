@@ -57,21 +57,6 @@ fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
     }
 }
 
-
-
-// Data class to represent QR data from Firebase
-data class QrItemData(
-    val imageUrl: String = "",
-    val link: String = ""
-)
-
-data class FolderItemData(
-    val id: String = "",       // Id único de la carpeta, que puedes generar con push()
-    val name: String = "",     // Nombre de la carpeta
-    val qrs: List<String> = listOf()  // Lista de IDs de QR asociados a la carpeta
-)
-
-
 fun openUrl(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // Necesario para que funcione fuera de una actividad

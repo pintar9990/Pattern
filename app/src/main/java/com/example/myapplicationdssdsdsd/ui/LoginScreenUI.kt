@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,15 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.control.onLogin
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean = false) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val auth = FirebaseAuth.getInstance()
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var buttonAction by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -128,7 +128,21 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                     if (email.isEmpty() || password.isEmpty()) {
                         errorMessage = "Por favor, rellena todos los campos."
                     } else {
-                        buttonAction = !buttonAction
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Inicio de sesión exitoso, navega a la pantalla principal
+                                    navController.navigate("SavedScreenUI")
+                                } else {
+                                    // Manejar errores
+                                    errorMessage = when (task.exception?.message) {
+                                        "The email address is badly formatted." -> "La dirección de correo electrónico no tiene un formato válido."
+                                        "There is no user record corresponding to this identifier. The user may have been deleted." -> "No existe una cuenta con este correo electrónico."
+                                        "The password is invalid or the user does not have a password." -> "La contraseña es incorrecta."
+                                        else -> "Error al iniciar sesión. Por favor, verifica tus credenciales."
+                                    }
+                                }
+                            }
                     }
                 },
                 modifier = Modifier
@@ -178,9 +192,5 @@ fun LoginScreen(navController: NavHostController, registrationSuccess: Boolean =
                 )
             }
         }
-    }
-    if (buttonAction) {
-        errorMessage = onLogin(email,password)
-        buttonAction = !buttonAction
     }
 }

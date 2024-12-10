@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
