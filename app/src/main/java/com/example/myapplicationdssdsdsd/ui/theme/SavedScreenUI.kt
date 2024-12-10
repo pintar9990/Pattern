@@ -55,6 +55,8 @@ import com.example.myapplicationdssdsdsd.QrItemData
 import com.example.myapplicationdssdsdsd.R
 import com.example.myapplicationdssdsdsd.ToolBox
 import com.example.myapplicationdssdsdsd.decodeBase64ToBitmap
+import com.example.myapplicationdssdsdsd.isValidUrl
+import com.example.myapplicationdssdsdsd.openUrl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -62,6 +64,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.myapplicationdssdsdsd.openUrl
+import com.example.myapplicationdssdsdsd.isValidUrl
+
 
 @Composable
 fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean = false) {
@@ -456,7 +462,6 @@ fun FolderView(folderId: String, navController: NavHostController) {
     }
 
 }
-
 @Composable
 fun QrItem(
     item: QrItemData,
@@ -464,7 +469,10 @@ fun QrItem(
     isSelected: Boolean,
     onSelect: (Boolean) -> Unit,
     onTapItem: (QrItemData) -> Unit,
-    onRemoveFromFolder: (() -> Unit)? = null) {
+    onRemoveFromFolder: (() -> Unit)? = null
+) {
+    val context = LocalContext.current // Obtén el contexto aquí
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -472,12 +480,22 @@ fun QrItem(
             .background(if (isSelected) Color.Red else Color.Transparent)
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onTap = { onTapItem(item) }
+                    onTap = {
+                        if (!isDeleteMode) {
+                            val url = item.link
+                            if (isValidUrl(url)) {
+                                openUrl(context, url)  // Abre la URL directamente
+                            } else {
+                                val googleSearchUrl = "https://www.google.com/search?q=$url"
+                                openUrl(context, googleSearchUrl)
+                            }
+                        } else {
+                            onTapItem(item)
+                        }
+                    }
                 )
             }
-            .clickable {
-                onTapItem(item)
-            }
+            .padding(vertical = 10.dp)
     ) {
         val bitmap = remember { decodeBase64ToBitmap(item.imageUrl) }
         bitmap?.let {
@@ -500,7 +518,7 @@ fun QrItem(
                 Icon(Icons.Default.RemoveCircle, contentDescription = "Sacar de la carpeta")
             }
         }
-        if (isDeleteMode){
+        if (isDeleteMode) {
             Checkbox(
                 checked = isSelected,
                 onCheckedChange = onSelect
