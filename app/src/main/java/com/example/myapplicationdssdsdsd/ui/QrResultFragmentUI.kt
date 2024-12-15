@@ -86,27 +86,7 @@ fun QRCodeScreen(
                         .size(200.dp)
                 )
 
-                // Texto clickeable
-                val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color(0x99000000), fontSize = 32.sp)) {
-                        append("")
-                    }
-                    pushStringAnnotation(tag = "URL", annotation = linkText)
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 20.sp,
-                            fontFamily = FontFamily.Default,
-                            color = Color(0x99000000),
-                            textDecoration = TextDecoration.Underline
-                        )
-                    ) {
-                        append(linkText)
-                    }
-                    pop()
-                }
-
                 OpenUrlClickableText(linkText)
-
 
                 Button(
                     onClick = {
