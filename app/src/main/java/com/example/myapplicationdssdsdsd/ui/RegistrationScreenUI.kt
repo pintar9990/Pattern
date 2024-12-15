@@ -183,7 +183,7 @@ fun RegistrationScreen(navController: NavHostController) {
             )
 
             Button(
-                onClick = {navController.navigate("login") },
+                onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .padding(top = 29.dp)
                     .width(169.dp)

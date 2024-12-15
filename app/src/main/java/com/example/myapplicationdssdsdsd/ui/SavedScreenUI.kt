@@ -21,11 +21,13 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,6 +65,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.getValue
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean = false) {
     var qrItems by remember { mutableStateOf<List<QrItemData>>(emptyList()) }
@@ -127,7 +130,13 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(end = 16.dp),
-                        placeholder = { Text("Buscar...") }
+                        placeholder = { Text("Buscar...") },
+                        colors = TextFieldDefaults.textFieldColors(
+                            focusedIndicatorColor = Color(0xFF0048FF),
+                            unfocusedIndicatorColor = Color(0xFF0048FF),
+                            containerColor = Color.Transparent
+                        )
+
                     )
                 }
 
@@ -205,6 +214,7 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         ).Render()
                         Spacer(modifier = Modifier.height(14.dp))
                     }
+                    item { Spacer(modifier = Modifier.height(60.dp))}
                 }
             }
 

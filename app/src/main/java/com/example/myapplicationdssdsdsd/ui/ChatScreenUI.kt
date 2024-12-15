@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import com.example.myapplicationdssdsdsd.GlobalVariables.navController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,15 +91,31 @@ fun ChatScreen(contactId: String, contactName: String) {
             .padding(16.dp)
     ) {
         Column {
-            Text(
-                text = "Chat con $contactName",
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 24.sp,
-                    fontFamily = FontFamily(Font(R.font.lalezar_regular))
-                ),
-                modifier = Modifier.padding(8.dp)
-            )
+            Box(
+                modifier = Modifier
+            ) {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.back_arrow_icon),
+                        contentDescription = "Volver"
+                    )
+                }
+
+                Text(
+                    text = "Chat con $contactName",
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        fontFamily = FontFamily(Font(R.font.lalezar_regular))
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(start = 48.dp, 8.dp)
+                )
+            }
 
             LazyColumn(
                 modifier = Modifier
