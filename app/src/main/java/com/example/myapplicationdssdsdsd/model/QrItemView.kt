@@ -100,7 +100,7 @@ class QrItemView(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(if (isSelected) Color.Red else Color.Transparent)
+                .background(if (isSelected) Color.LightGray else Color.Transparent)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = {

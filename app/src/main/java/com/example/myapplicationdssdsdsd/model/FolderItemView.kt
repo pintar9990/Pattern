@@ -41,7 +41,7 @@ class FolderItemView(
                         navController.navigate("FolderView/${folder.id}")
                     }
                 }
-                .background(if (isSelected) Color.Red else Color.Transparent)
+                .background(if (isSelected) Color.LightGray else Color.Transparent)
         ) {
             if (isDeleteMode) {
                 Checkbox(
@@ -52,7 +52,7 @@ class FolderItemView(
             Image(
                 painter = painterResource(id = R.drawable.folder_icon),
                 contentDescription = "Carpeta",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(72.dp)
             )
             Spacer(modifier = Modifier.width(15.dp))
             Text(
