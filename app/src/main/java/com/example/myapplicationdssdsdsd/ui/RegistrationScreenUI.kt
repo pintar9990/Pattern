@@ -114,7 +114,7 @@ fun RegistrationScreen(navController: NavHostController) {
                 )
             )
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
             Button(
                 onClick = {
@@ -203,7 +203,7 @@ fun RegistrationScreen(navController: NavHostController) {
                     text = errorMessage ?: "",
                     color = Color.Red,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 5.dp)
                 )
             }
         }
