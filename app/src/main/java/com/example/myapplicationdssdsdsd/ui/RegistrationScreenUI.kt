@@ -34,7 +34,7 @@ fun RegistrationScreen(navController: NavHostController) {
     val database: DatabaseReference = FirebaseDatabase.getInstance("https://patterns-3f17e-default-rtdb.europe-west1.firebasedatabase.app").reference
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$")
+    val emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     val passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[!@#\$%^&*])[A-Za-z0-9!@#\$%^&*]{6,}$")
 
     Box(
