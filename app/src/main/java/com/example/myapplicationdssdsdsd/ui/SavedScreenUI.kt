@@ -227,9 +227,8 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         .fillMaxWidth()
                         .background(Color.White)
                         .padding(5.dp),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceBetween // Distribuye los elementos a los extremos
                 ) {
-
                     IconButton(
                         onClick = {
                             isDeleteMode = false
@@ -242,27 +241,26 @@ fun SavedScreenUI(navController: NavHostController, registrationSuccess: Boolean
                         )
                     }
 
-                    Button(
-                        onClick = {
-                            // Eliminar los elementos seleccionados
-                            selectedItems.forEach { id ->
-                                folderItems.find { it.id == id }?.let {
-                                    deleteFolder(it) { updatedFolders -> folderItems = updatedFolders }
-                                }
-                                qrItems.find { it.imageUrl == id }?.let {
-                                    deleteQrItem(it) { updatedQrs -> qrItems = updatedQrs }
-                                }
+                    IconButton(onClick = {
+                        // Eliminar los elementos seleccionados
+                        selectedItems.forEach { id ->
+                            folderItems.find { it.id == id }?.let {
+                                deleteFolder(it) { updatedFolders -> folderItems = updatedFolders }
                             }
-                            isDeleteMode = false
-                            selectedItems = emptySet()
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Eliminar seleccionados")
+                            qrItems.find { it.imageUrl == id }?.let {
+                                deleteQrItem(it) { updatedQrs -> qrItems = updatedQrs }
+                            }
+                        }
+                        isDeleteMode = false
+                        selectedItems = emptySet()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.bin_icon),
+                            contentDescription = "Volver"
+                        )
                     }
                 }
             }
-
         }
     }
 
@@ -403,7 +401,7 @@ fun FolderView(folderId: String, navController: NavHostController) {
                 .padding(16.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.qr_icon),
+                painter = painterResource(id = R.drawable.add_qr_icon),
                 contentDescription = "Añadir QR"
             )
         }
