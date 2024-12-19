@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd
+package com.example.myapplicationdssdsdsd.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.myapplicationdssdsdsd.R
 
 
 @Composable

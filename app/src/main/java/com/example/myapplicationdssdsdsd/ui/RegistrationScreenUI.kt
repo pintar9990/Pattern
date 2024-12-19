@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ fun RegistrationScreen(navController: NavHostController) {
     val database: DatabaseReference = FirebaseDatabase.getInstance("https://patterns-3f17e-default-rtdb.europe-west1.firebasedatabase.app").reference
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$")
+    val emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     val passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[!@#\$%^&*])[A-Za-z0-9!@#\$%^&*]{6,}$")
 
     Box(
@@ -114,7 +114,7 @@ fun RegistrationScreen(navController: NavHostController) {
                 )
             )
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
             Button(
                 onClick = {
@@ -183,7 +183,7 @@ fun RegistrationScreen(navController: NavHostController) {
             )
 
             Button(
-                onClick = {navController.navigate("login") },
+                onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .padding(top = 29.dp)
                     .width(169.dp)
@@ -203,7 +203,7 @@ fun RegistrationScreen(navController: NavHostController) {
                     text = errorMessage ?: "",
                     color = Color.Red,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 5.dp)
                 )
             }
         }

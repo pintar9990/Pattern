@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.example.myapplicationdssdsdsd
+package com.example.myapplicationdssdsdsd.control
 
 
 import android.content.Context
@@ -18,14 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 
 
 // Función para decodificar la cadena base64 a un Bitmap
@@ -60,51 +58,28 @@ fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
     }
 }
 
-
-
-// Data class to represent QR data from Firebase
-data class QrItemData(
-    val imageUrl: String = "",
-    val link: String = ""
-)
-
-data class FolderItemData(
-    val id: String = "",       // Id único de la carpeta, que puedes generar con push()
-    val name: String = "",     // Nombre de la carpeta
-    val qrs: List<String> = listOf()  // Lista de IDs de QR asociados a la carpeta
-)
-
-
 fun openUrl(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // Necesario para que funcione fuera de una actividad
     context.startActivity(intent)
 }
 
+
 @Composable
 fun OpenUrlClickableText(linkText: String) {
     val context = LocalContext.current
 
     val annotatedString = buildAnnotatedString {
-        // Texto "Abrir:" con estilo consistente
-        withStyle(
-            style = SpanStyle(
-                color = Color(0x99000000),
-                fontSize = 32.sp,
-                fontFamily = FontFamily(Font(R.font.jaro_regular)) // Aplicar la fuente personalizada
-            )
-        ) {
-            append("Abrir: ")
+        withStyle(style = SpanStyle(color = Color(0x99000000), fontSize = 32.sp)) {
+            append("")
         }
-        // Enlace clickeable con estilo consistente
         pushStringAnnotation(tag = "URL", annotation = linkText)
         withStyle(
             style = SpanStyle(
-                color = Color.Blue,
-                textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
-                fontFamily = FontFamily(Font(R.font.jaro_regular)) // Fuente personalizada
+                fontSize = 20.sp,
+                fontFamily = FontFamily.Default,
+                color = Color(0x99000000),
+                textDecoration = TextDecoration.Underline
             )
         ) {
             append(linkText)

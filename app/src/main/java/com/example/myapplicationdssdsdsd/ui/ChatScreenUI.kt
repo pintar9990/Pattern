@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.ui.theme
+package com.example.myapplicationdssdsdsd.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -14,11 +14,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -26,20 +24,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.decodeBase64ToBitmap
-import com.example.myapplicationdssdsdsd.QrItemData
+import com.example.myapplicationdssdsdsd.control.decodeBase64ToBitmap
+import com.example.myapplicationdssdsdsd.model.QrItemData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import com.example.myapplicationdssdsdsd.GlobalVariables.navController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,15 +91,31 @@ fun ChatScreen(contactId: String, contactName: String) {
             .padding(16.dp)
     ) {
         Column {
-            Text(
-                text = "Chat con $contactName",
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 24.sp,
-                    fontFamily = FontFamily(Font(R.font.lalezar_regular))
-                ),
-                modifier = Modifier.padding(8.dp)
-            )
+            Box(
+                modifier = Modifier
+            ) {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.back_arrow_icon),
+                        contentDescription = "Volver"
+                    )
+                }
+
+                Text(
+                    text = "Chat con $contactName",
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        fontFamily = FontFamily(Font(R.font.lalezar_regular))
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(start = 48.dp, 8.dp)
+                )
+            }
 
             LazyColumn(
                 modifier = Modifier

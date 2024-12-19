@@ -1,17 +1,13 @@
-package com.example.myapplicationdssdsdsd
+package com.example.myapplicationdssdsdsd.ui
 
 import android.graphics.Bitmap
 import android.os.Build
-import android.util.Base64
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,24 +21,21 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplicationdssdsdsd.GlobalVariables
+import com.example.myapplicationdssdsdsd.R
+import com.example.myapplicationdssdsdsd.control.OpenUrlClickableText
+import com.example.myapplicationdssdsdsd.components.ToolBox
+import com.example.myapplicationdssdsdsd.control.saveQrToFirebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
-import java.io.ByteArrayOutputStream
-import java.util.UUID
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -88,26 +81,7 @@ fun QRCodeScreen(
                         .size(200.dp)
                 )
 
-                // Texto clickeable
-                val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color(0x99000000), fontSize = 32.sp)) {
-                        append("Abrir: ")
-                    }
-                    pushStringAnnotation(tag = "URL", annotation = linkText)
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Blue,
-                            textDecoration = TextDecoration.Underline,
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append(linkText)
-                    }
-                    pop()
-                }
-
                 OpenUrlClickableText(linkText)
-
 
                 Button(
                     onClick = {
@@ -161,32 +135,4 @@ fun generateQRCode(text: String): Bitmap {
         }
     }
     return bitmap
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun saveQrToFirebase(link: String, bitmap: Bitmap, auth: FirebaseAuth, database: DatabaseReference, onSuccess: () -> Unit) {
-    val user = auth.currentUser
-    user?.uid?.let { uid ->
-        val qrId = UUID.randomUUID().toString()
-        val qrRef = database.child("users").child(uid).child("qrs").child(qrId)
-
-        // Convertir el bitmap a un string base64
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        val qrImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
-
-        val qrData = mapOf(
-            "imageUrl" to "data:image/png;base64,$qrImage",
-            "link" to link
-        )
-
-        qrRef.setValue(qrData)
-            .addOnSuccessListener {
-                Log.d("Firebase", "QR guardado exitosamente")
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firebase", "Error al guardar el QR", e)
-            }
-    }
 }
