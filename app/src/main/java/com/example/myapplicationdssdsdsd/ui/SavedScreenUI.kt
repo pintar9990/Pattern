@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
-import com.example.myapplicationdssdsdsd.control.ToolBox
+import com.example.myapplicationdssdsdsd.components.ToolBox
 import com.example.myapplicationdssdsdsd.control.addQrToFolder
 import com.example.myapplicationdssdsdsd.control.createFolder
 import com.example.myapplicationdssdsdsd.control.decodeBase64ToBitmap
@@ -57,9 +56,9 @@ import com.example.myapplicationdssdsdsd.control.getUserFolders
 import com.example.myapplicationdssdsdsd.control.getUserQrItems
 import com.example.myapplicationdssdsdsd.control.removeQrFromFolder
 import com.example.myapplicationdssdsdsd.model.FolderItemData
-import com.example.myapplicationdssdsdsd.model.FolderItemView
+import com.example.myapplicationdssdsdsd.components.FolderItemView
 import com.example.myapplicationdssdsdsd.model.QrItemData
-import com.example.myapplicationdssdsdsd.model.QrItemView
+import com.example.myapplicationdssdsdsd.components.QrItemView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.getValue

@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.myapplicationdssdsdsd.control.ToolBox
+import com.example.myapplicationdssdsdsd.components.ToolBox
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.auth.FirebaseAuth

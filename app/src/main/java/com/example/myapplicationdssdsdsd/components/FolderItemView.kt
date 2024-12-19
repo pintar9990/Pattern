@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.model
+package com.example.myapplicationdssdsdsd.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplicationdssdsdsd.R
+import com.example.myapplicationdssdsdsd.model.FolderItemData
 
 
 class FolderItemView(

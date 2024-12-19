@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.model
+package com.example.myapplicationdssdsdsd.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplicationdssdsdsd.control.decodeBase64ToBitmap
 import com.example.myapplicationdssdsdsd.control.isValidUrl
 import com.example.myapplicationdssdsdsd.control.openUrl
+import com.example.myapplicationdssdsdsd.model.QrItemData
 
 
 class QrItemView(

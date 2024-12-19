@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,8 +26,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplicationdssdsdsd.R
 import com.example.myapplicationdssdsdsd.R.font
-import com.example.myapplicationdssdsdsd.control.ToolBox
+import com.example.myapplicationdssdsdsd.components.ToolBox
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.*
 
@@ -46,7 +47,9 @@ fun ProfileScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }  // Cambiar contrasena estará vacío por defecto
     var newPassword by remember { mutableStateOf("") }  // Nueva contraseña
     var isSaving by remember { mutableStateOf(false) } // Indicador de carga
-
+    var isLocked by remember { mutableStateOf(true) } // Nuevo estado para controlar el candado
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var changeSuccess by remember { mutableStateOf(false) } // Valor al cambiar el perfil
     var currentScreen by remember { mutableStateOf("ProfileScreenUI") }
 
     // Carga inicial de datos
@@ -90,12 +93,31 @@ fun ProfileScreen(navController: NavController) {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(onClick = { isLocked = !isLocked }) { // Cambiar estado del candado
+                    Icon(
+                        painter = if (isLocked) painterResource(id = R.drawable.lock_closed_icon)
+                        else painterResource(id = R.drawable.lock_open_icon),
+                        contentDescription = "Candado",
+                        tint = Color.Black,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+
+
             Text(
                 text = "Perfil",
                 fontSize = 48.sp,
                 fontFamily = FontFamily(Font(font.jaro_regular)),
                 color = Color(0xCC000000),
-                modifier = Modifier.padding(start = 10.dp) // Mueve el texto ligeramente a la derecha
+                modifier = Modifier.offset(x = -20.dp) // Mueve el texto ligeramente a la derecha
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -117,7 +139,9 @@ fun ProfileScreen(navController: NavController) {
                     Image(
                         painter = painterResource(id = R.drawable.email_icon),
                         contentDescription = "Email Icon",
-                        modifier = Modifier.size(56.dp)
+                        modifier = Modifier
+                            .size(56.dp)
+                            .offset(y = 20.dp) // Ajusta el valor de y para bajar la imagen
                     )
                 }
 
@@ -129,6 +153,7 @@ fun ProfileScreen(navController: NavController) {
                         value = username,
                         onValueChange = { username = it },
                         modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLocked, // Deshabilitar si el candado está cerrado
                         label = {
                             Text(
                                 text = "Nombre de usuario",
@@ -148,18 +173,20 @@ fun ProfileScreen(navController: NavController) {
                             fontSize = 30.sp, // Cambia el tamaño de la letra aquí
                             fontFamily = FontFamily(Font(R.font.jaro_regular)),
                             color = Color.Black
-                        )
+                        ),
+                        maxLines = 1
                     )
 
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
                         modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLocked, // Deshabilitar si el candado está cerrado
                         label = {
                             Text(
                                 text = "Correo electrónico",
                                 style = TextStyle(
-                                    fontSize = 10.sp, // Cambia el tamaño de la letra aquí
+                                    fontSize = 20.sp, // Cambia el tamaño de la letra aquí
                                     fontFamily = FontFamily(Font(R.font.jaro_regular)),
                                     color = Color.Gray // Cambia el color si es necesario
                                 )
@@ -171,10 +198,11 @@ fun ProfileScreen(navController: NavController) {
                             unfocusedBorderColor = Color.Transparent
                         ),
                         textStyle = TextStyle(
-                            fontSize = 30.sp, // Cambia el tamaño de la letra aquí
+                            fontSize = 20.sp, // Cambia el tamaño de la letra aquí
                             fontFamily = FontFamily(Font(R.font.jaro_regular)),
                             color = Color.Black
-                        )
+                        ),
+                        maxLines = 1
                     )
                 }
             }
@@ -187,6 +215,7 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier
                     .padding(horizontal = 25.dp)
                     .fillMaxWidth(),
+                enabled = !isLocked, // Deshabilitar si el candado está cerrado
                 label = {
                     Text(
                         text = "Contraseña actual",
@@ -217,7 +246,8 @@ fun ProfileScreen(navController: NavController) {
                     fontSize = 30.sp, // Cambia el tamaño de la letra aquí
                     fontFamily = FontFamily(Font(R.font.jaro_regular)),
                     color = Color.Black
-                )
+                ),
+                maxLines = 1
             )
 
             OutlinedTextField(
@@ -226,6 +256,7 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier
                     .padding(horizontal = 25.dp)
                     .fillMaxWidth(),
+                enabled = !isLocked, // Deshabilitar si el candado está cerrado
                 label = {
                     Text(
                         text = "Nueva contraseña",
@@ -256,7 +287,8 @@ fun ProfileScreen(navController: NavController) {
                     fontSize = 30.sp, // Cambia el tamaño de la letra aquí
                     fontFamily = FontFamily(Font(R.font.jaro_regular)),
                     color = Color.Black
-                )
+                ),
+                maxLines = 1
             )
 
             HorizontalDivider(
@@ -268,77 +300,111 @@ fun ProfileScreen(navController: NavController) {
                 color = Color(0xFF555555)
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 5.dp)
+                )
+            }
+
+            if (changeSuccess) {
+                Text(
+                    text = "Se han guardado los datos correctamente.",
+                    color = Color.Green,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             Button(
                 onClick = {
+                    changeSuccess = false
+                    when {
+                        username.isEmpty() -> {
+                            errorMessage = "Por favor, escoja su nombre de usuario."
+                            return@Button
+                        }
+                        email.isEmpty() -> {
+                            errorMessage = "Por favor, escoja su correo electrónico."
+                            return@Button
+                        }
+                    }
+
                     isSaving = true
                     user?.let { currentUser ->
-                        // Actualización de email y username
-                        currentUser.verifyBeforeUpdateEmail(email)
-                            .addOnCompleteListener { emailTask ->
-                                if (emailTask.isSuccessful) {
-                                    val profileUpdates = UserProfileChangeRequest.Builder()
-                                        .setDisplayName(username)
-                                        .build()
+                        if (password.isNotEmpty()) {
+                            val credential = EmailAuthProvider.getCredential(currentUser.email!!, password)
 
-                                    currentUser.updateProfile(profileUpdates)
-                                        .addOnCompleteListener { profileTask ->
-                                            if (profileTask.isSuccessful) {
-                                                val userData = mapOf(
-                                                    "username" to username,
-                                                    "email" to email
-                                                )
-                                                database.child("users").child(currentUser.uid)
-                                                    .updateChildren(userData)
-                                                    .addOnSuccessListener {
-                                                        Log.d(
-                                                            "Firebase",
-                                                            "Datos actualizados exitosamente"
-                                                        )
-                                                    }
-                                                    .addOnFailureListener { e ->
-                                                        Log.e(
-                                                            "Firebase",
-                                                            "Error al actualizar datos en la base: $e"
-                                                        )
-                                                    }
-                                            } else {
-                                                Log.e(
-                                                    "Firebase",
-                                                    "Error al actualizar el perfil: ${profileTask.exception}"
-                                                )
-                                            }
+                            // Reautenticación del usuario
+                            currentUser.reauthenticate(credential).addOnCompleteListener { reauthTask ->
+                                if (reauthTask.isSuccessful) {
+                                    currentUser.verifyBeforeUpdateEmail(email).addOnCompleteListener { emailTask ->
+                                        if (emailTask.isSuccessful) {
+                                            val profileUpdates = UserProfileChangeRequest.Builder()
+                                                .setDisplayName(username)
+                                                .build()
 
-                                            // Cambio de contraseña si se proporciona
-                                            if (newPassword.isNotBlank()) {
-                                                currentUser.updatePassword(newPassword)
-                                                    .addOnCompleteListener { passwordTask ->
+                                            currentUser.updateProfile(profileUpdates).addOnCompleteListener { profileTask ->
+                                                if (profileTask.isSuccessful) {
+                                                    val userData = mapOf("username" to username, "email" to email)
+                                                    database.child("users").child(currentUser.uid).updateChildren(userData)
+                                                        .addOnSuccessListener {
+                                                            Log.d("Firebase", "Datos actualizados exitosamente")
+                                                        }
+                                                        .addOnFailureListener { e ->
+                                                            Log.e("Firebase", "Error al actualizar datos en la base: $e")
+                                                        }
+                                                    if (newPassword.isBlank()) {
+                                                        password = ""
+                                                        newPassword = ""
+                                                        errorMessage = null
+                                                        isLocked = true
+                                                        changeSuccess = true
+                                                    }
+
+                                                } else {
+                                                    Log.e("Firebase", "Error al actualizar el perfil: ${profileTask.exception}")
+                                                }
+
+                                                if (newPassword.isNotBlank()) {
+                                                    currentUser.updatePassword(newPassword).addOnCompleteListener { passwordTask ->
                                                         if (passwordTask.isSuccessful) {
-                                                            Log.d(
-                                                                "Firebase",
-                                                                "Contraseña actualizada exitosamente"
-                                                            )
+                                                            Log.d("Firebase", "Contraseña actualizada exitosamente")
+                                                            password = ""
+                                                            newPassword = ""
+                                                            isLocked = true
+                                                            errorMessage = null
+                                                            changeSuccess = true
                                                         } else {
-                                                            Log.e(
-                                                                "Firebase",
-                                                                "Error al actualizar la contraseña: ${passwordTask.exception}"
-                                                            )
+                                                            Log.e("Firebase", "Error al actualizar la contraseña: ${passwordTask.exception}")
+                                                            errorMessage = "La nueva contraseña tiene un formato inválido."
+                                                            isSaving = false
                                                         }
                                                         isSaving = false
                                                     }
-                                            } else {
-                                                isSaving = false
+                                                } else {
+                                                    isSaving = false
+                                                }
                                             }
+                                        } else {
+                                            Log.e("Firebase", "Error al enviar correo de verificación: ${emailTask.exception}")
+                                            errorMessage = "Correo electrónico en uso, o inválido."
+                                            isSaving = false
                                         }
+                                    }
                                 } else {
-                                    Log.e(
-                                        "Firebase",
-                                        "Error al enviar correo de verificación: ${emailTask.exception}"
-                                    )
+                                    Log.e("Firebase", "Error al reautenticar: ${reauthTask.exception}")
+                                    errorMessage = "Contraseña actual incorrecta."
                                     isSaving = false
                                 }
                             }
+                        } else {
+                            errorMessage = "Por favor, introduzca la contraseña para realizar cambios."
+                            changeSuccess = false
+                            isSaving = false
+                        }
                     }
                 },
                 modifier = Modifier
@@ -357,7 +423,6 @@ fun ProfileScreen(navController: NavController) {
                     color = Color(0xFFFFFFFF)
                 )
             }
-
             Spacer(modifier = Modifier.height(69.dp))
         }
     }
@@ -365,4 +430,3 @@ fun ProfileScreen(navController: NavController) {
         currentScreen = screen
     }
 }
-

@@ -1,4 +1,4 @@
-package com.example.myapplicationdssdsdsd.control
+package com.example.myapplicationdssdsdsd.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
